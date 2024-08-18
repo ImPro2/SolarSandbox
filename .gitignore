@@ -1,0 +1,7 @@
+Binaries/
+Intermediates/
+*.res
+*.identcache
+*.local
+__history/
+__recovery/

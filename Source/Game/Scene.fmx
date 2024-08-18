@@ -1,0 +1,73 @@
+object SceneFrame: TSceneFrame
+  Align = Client
+  Size.Width = 215.000000000000000000
+  Size.Height = 614.000000000000000000
+  Size.PlatformDefault = False
+  object lblHeading: TLabel
+    StyledSettings = [FontColor]
+    Position.X = 16.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Fira Code'
+    TextSettings.Font.Size = 20.000000000000000000
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.Trimming = None
+    Text = 'Scene'
+    TabOrder = 0
+  end
+  object Panel: TPanel
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 199.000000000000000000
+    Size.Height = 526.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object Grid: TGrid
+      Align = Contents
+      CanFocus = True
+      ClipChildren = True
+      Size.Width = 199.000000000000000000
+      Size.Height = 526.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Options = [AlternatingRowBackground, ColumnResize, ColLines, RowLines, RowSelect, CancelEditingByDefault, AutoDisplacement]
+      OnGetValue = GridGetValue
+      OnCellClick = GridCellClick
+      Viewport.Width = 179.000000000000000000
+      Viewport.Height = 522.000000000000000000
+      object NameColumn: TStringColumn
+        Header = 'Space Object Name'
+        HeaderSettings.TextSettings.WordWrap = False
+        Size.Width = 113.000000000000000000
+      end
+    end
+  end
+  object edtName: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 2
+    Position.X = 46.000000000000000000
+    Position.Y = 42.000000000000000000
+    Size.Width = 160.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object btnAddSpaceObject: TButton
+    StyledSettings = [FontColor]
+    Position.X = 8.000000000000000000
+    Position.Y = 42.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = '+'
+    TextSettings.Font.Family = 'Roboto'
+    TextSettings.Font.Size = 18.000000000000000000
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.Trimming = None
+    OnClick = btnAddSpaceObjectClick
+  end
+end

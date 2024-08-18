@@ -1,0 +1,50 @@
+object ProjectSelectorFrame: TProjectSelectorFrame
+  Align = Client
+  Size.Width = 510.000000000000000000
+  Size.Height = 308.000000000000000000
+  Size.PlatformDefault = False
+  object TabControl: TTabControl
+    Align = Contents
+    Size.Width = 510.000000000000000000
+    Size.Height = 308.000000000000000000
+    Size.PlatformDefault = False
+    TabIndex = 0
+    TabOrder = 0
+    TabPosition = PlatformDefault
+    Sizes = (
+      510s
+      282s
+      510s
+      282s)
+    object tiOpenProject: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = True
+      Size.Width = 90.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Open Project'
+      ExplicitSize.cx = 90.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+    end
+    object tiNewProject: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 84.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'New Project'
+      ExplicitSize.cx = 84.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+    end
+  end
+end

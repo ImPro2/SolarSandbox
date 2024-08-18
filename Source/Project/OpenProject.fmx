@@ -1,0 +1,12 @@
+object OpenProjectFrame: TOpenProjectFrame
+  Size.Width = 320.000000000000000000
+  Size.Height = 240.000000000000000000
+  Size.PlatformDefault = False
+  object Label1: TLabel
+    Position.X = 168.000000000000000000
+    Position.Y = 160.000000000000000000
+    TextSettings.Trimming = None
+    Text = 'Open Project'
+    TabOrder = 0
+  end
+end
