@@ -61,6 +61,8 @@ end;
 procedure TSceneFrame.OnSpaceObjectsChange();
 begin
   Grid.RowCount := Length(GSpaceObjects);
+  Grid.BeginUpdate();
+  Grid.EndUpdate();
 end;
 
 procedure TSceneFrame.SetSelectedSpaceObject(const Index: int32);
@@ -85,6 +87,7 @@ end;
 procedure TSceneFrame.GridCellClick(const Column: TColumn; const Row: Integer);
 begin
   SelectedSpaceObject := Row;
+  OnSpaceObjectSelected(GSpaceObjects[Row]);
 end;
 
 procedure TSceneFrame.GridGetValue(Sender: TObject; const ACol, ARow: Integer;

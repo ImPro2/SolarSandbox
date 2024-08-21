@@ -8,7 +8,7 @@ uses
   Quick.Logger, Quick.Console, Quick.Logger.Provider.Console, Quick.Logger.Provider.Files,
   FMX.Objects, FMX.Controls.Presentation, FMX.Menus,
   Quick.YAML, Quick.YAML.Serializer,
-  ProjectInfo, ProjectSerializer, SpaceObject, Scene, Simulation;
+  ProjectInfo, ProjectSerializer, SpaceObject, Scene, Simulation, Properties;
 
 type
   TGameFrame = class(TFrame)
@@ -42,6 +42,7 @@ type
     procedure OnRemoveSpaceObject(SpaceObject: TSpaceObject);
 
     procedure OnSpaceObjectSelected(SpaceObject: TSpaceObject);
+    procedure OnSpaceObjectChanged(SpaceObject: TSpaceObject);
   private
     FProjectInfo: TProjectInfo;
     FInitialized: Boolean;
@@ -51,6 +52,7 @@ type
     FMouseX, FMouseY: Single;
 
     FSceneFrame: TSceneFrame;
+    FPropertiesFrame: TPropertiesFrame;
     FSimulationFrame: TSimulationFrame;
   public
     procedure Init(const ProjectInfo: TProjectInfo; NewProject: Boolean);
@@ -75,6 +77,11 @@ begin
   FSceneFrame.Parent := pnlScene;
   FSceneFrame.Visible := False;
 
+  FPropertiesFrame := TPropertiesFrame.Create(Self);
+  FPropertiesFrame.OnSpaceObjectChanged := Self.OnSpaceObjectChanged;
+  FPropertiesFrame.Parent := pnlProperties;
+  FPropertiesFrame.Visible := False;
+
   FSimulationFrame := TSimulationFrame.Create(Self);
   FSimulationFrame.Parent := pnlSimulation;
   FSimulationFrame.Visible := False;
@@ -94,11 +101,20 @@ end;
 
 procedure TGameFrame.OnSpaceObjectSelected(SpaceObject: TSpaceObject);
 begin
+  FPropertiesFrame.OnSpaceObjectSelected(SpaceObject);
+end;
+
+procedure TGameFrame.OnSpaceObjectChanged(SpaceObject: TSpaceObject);
+begin
   for var i := 0 to Length(GSpaceObjects) - 1 do
   begin
-    if SpaceObject.ID = GSpaceObjects[i].ID then
-      FSceneFrame.SelectedSpaceObject := i;
+    if GSpaceObjects[i].ID = SpaceObject.ID then
+    begin
+      GSpaceObjects[i] := SpaceObject;
+    end;
   end;
+
+  FSceneFrame.OnSpaceObjectsChange();
 end;
 
 procedure TGameFrame.FrameMouseDown(Sender: TObject; Button: TMouseButton;
@@ -125,11 +141,14 @@ begin
 
   FSceneFrame.Init();
   FSceneFrame.Visible := True;
+  FPropertiesFrame.Visible := True;
   FSimulationFrame.Visible := True;
 end;
 
 procedure TGameFrame.Update(fDeltaTime: float32);
 begin
+  var sFPS: string := FloatToStrF(1.0 / (1000.0 * fDeltaTime), ffGeneral, 9, 9);
+  Logger.Trace('FPS: ' + sFPS);
 end;
 
 {$R *.fmx}

@@ -17,7 +17,8 @@ uses
   Scene in 'Source\Game\Scene.pas' {SceneFrame: TFrame},
   Simulation in 'Source\Game\Simulation.pas' {SimulationFrame: TFrame},
   SpaceObject in 'Source\Game\SpaceObject.pas',
-  Main in 'Source\Forms\Main.pas' {MainForm};
+  Main in 'Source\Forms\Main.pas' {MainForm},
+  Properties in 'Source\Game\Properties.pas' {PropertiesFrame: TFrame};
 
 {$R *.res}
 

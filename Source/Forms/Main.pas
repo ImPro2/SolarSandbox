@@ -55,7 +55,7 @@ end;
 
 procedure TMainForm.OnStartGame(const ProjectInfo: TProjectInfo);
 begin
-  Self.WindowState := TWindowState.wsMaximized;
+  //Self.WindowState := TWindowState.wsMaximized;
   frmProjectSelector.Visible := False;
   frmGame.Visible := True;
   frmGame.Init(ProjectInfo, False);

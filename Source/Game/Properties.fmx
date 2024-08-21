@@ -1,0 +1,72 @@
+object PropertiesFrame: TPropertiesFrame
+  Align = Client
+  Size.Width = 220.000000000000000000
+  Size.Height = 499.000000000000000000
+  Size.PlatformDefault = False
+  object lblHeading: TLabel
+    StyledSettings = [FontColor]
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 121.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Fira Code'
+    TextSettings.Font.Size = 18.000000000000000000
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.Trimming = None
+    Text = 'Properties'
+    TabOrder = 0
+  end
+  object Panel: TPanel
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 41.000000000000000000
+    Size.Width = 204.000000000000000000
+    Size.Height = 450.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object lblName: TLabel
+      Position.X = 8.000000000000000000
+      Position.Y = 16.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Trimming = None
+      Text = 'Name'
+      TabOrder = 0
+    end
+    object lblMass: TLabel
+      Position.X = 8.000000000000000000
+      Position.Y = 46.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Trimming = None
+      Text = 'Mass'
+      TabOrder = 1
+    end
+    object edtName: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Anchors = [akLeft, akTop, akRight]
+      TabOrder = 2
+      Position.X = 48.000000000000000000
+      Position.Y = 16.000000000000000000
+      Size.Width = 148.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      OnChange = edtNameChange
+    end
+    object spnMass: TSpinBox
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Anchors = [akLeft, akTop, akRight]
+      TabOrder = 3
+      Cursor = crIBeam
+      Position.X = 48.000000000000000000
+      Position.Y = 46.000000000000000000
+      Size.Width = 148.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      OnChange = spnMassChange
+    end
+  end
+end

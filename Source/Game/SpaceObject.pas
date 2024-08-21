@@ -20,6 +20,7 @@ type
   TRemoveSpaceObjectEvent = procedure(SpaceObject: TSpaceObject) of object;
 
   TSpaceObjectSelectedEvent = procedure(SpaceObject: TSpaceObject) of object;
+  TSpaceObjectChangedEvent  = procedure(SpaceObject: TSpaceObject) of object;
 
 var
   GSpaceObjects: TSpaceObjectList;

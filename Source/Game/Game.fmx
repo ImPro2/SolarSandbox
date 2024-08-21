@@ -69,13 +69,13 @@ object GameFrame: TGameFrame
   object pnlLeft: TPanel
     Align = Left
     Position.Y = 24.000000000000000000
-    Size.Width = 145.000000000000000000
+    Size.Width = 175.000000000000000000
     Size.Height = 622.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
     object pnlScene: TPanel
       Align = Scale
-      Size.Width = 145.000000000000000000
+      Size.Width = 175.000000000000000000
       Size.Height = 289.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
@@ -83,7 +83,7 @@ object GameFrame: TGameFrame
     object pnlProperties: TPanel
       Align = Scale
       Position.Y = 288.000000000000000000
-      Size.Width = 145.000000000000000000
+      Size.Width = 175.000000000000000000
       Size.Height = 1104.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
@@ -91,23 +91,23 @@ object GameFrame: TGameFrame
   end
   object pnlRight: TPanel
     Anchors = [akLeft, akTop, akRight, akBottom]
-    Position.X = 145.000000000000000000
+    Position.X = 175.000000000000000000
     Position.Y = 24.000000000000000000
-    Size.Width = 773.000000000000000000
+    Size.Width = 735.000000000000000000
     Size.Height = 622.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
     object pnlSimulation: TPanel
       Anchors = [akLeft, akTop, akRight, akBottom]
       Position.Y = 26.000000000000000000
-      Size.Width = 773.000000000000000000
+      Size.Width = 735.000000000000000000
       Size.Height = 596.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
     end
     object pnlControlBar: TPanel
       Align = Top
-      Size.Width = 773.000000000000000000
+      Size.Width = 735.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1

@@ -5,13 +5,13 @@ object SceneFrame: TSceneFrame
   Size.PlatformDefault = False
   object lblHeading: TLabel
     StyledSettings = [FontColor]
-    Position.X = 16.000000000000000000
+    Position.X = 8.000000000000000000
     Position.Y = 8.000000000000000000
     Size.Width = 120.000000000000000000
     Size.Height = 17.000000000000000000
     Size.PlatformDefault = False
     TextSettings.Font.Family = 'Fira Code'
-    TextSettings.Font.Size = 20.000000000000000000
+    TextSettings.Font.Size = 18.000000000000000000
     TextSettings.Font.StyleExt = {00070000000000000004000000}
     TextSettings.Trimming = None
     Text = 'Scene'
@@ -36,8 +36,8 @@ object SceneFrame: TSceneFrame
       Options = [AlternatingRowBackground, ColumnResize, ColLines, RowLines, RowSelect, CancelEditingByDefault, AutoDisplacement]
       OnGetValue = GridGetValue
       OnCellClick = GridCellClick
-      Viewport.Width = 179.000000000000000000
-      Viewport.Height = 522.000000000000000000
+      Viewport.Width = 199.000000000000000000
+      Viewport.Height = 526.000000000000000000
       object NameColumn: TStringColumn
         Header = 'Space Object Name'
         HeaderSettings.TextSettings.WordWrap = False
