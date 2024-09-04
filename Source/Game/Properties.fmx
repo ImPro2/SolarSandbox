@@ -1,7 +1,7 @@
 object PropertiesFrame: TPropertiesFrame
   Align = Client
-  Size.Width = 220.000000000000000000
-  Size.Height = 499.000000000000000000
+  Size.Width = 250.000000000000000000
+  Size.Height = 532.000000000000000000
   Size.PlatformDefault = False
   object lblHeading: TLabel
     StyledSettings = [FontColor]
@@ -10,8 +10,8 @@ object PropertiesFrame: TPropertiesFrame
     Size.Width = 121.000000000000000000
     Size.Height = 25.000000000000000000
     Size.PlatformDefault = False
-    TextSettings.Font.Family = 'Fira Code'
-    TextSettings.Font.Size = 18.000000000000000000
+    TextSettings.Font.Family = 'Roboto'
+    TextSettings.Font.Size = 21.000000000000000000
     TextSettings.Font.StyleExt = {00070000000000000004000000}
     TextSettings.Trimming = None
     Text = 'Properties'
@@ -21,26 +21,32 @@ object PropertiesFrame: TPropertiesFrame
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 41.000000000000000000
-    Size.Width = 204.000000000000000000
-    Size.Height = 450.000000000000000000
+    Size.Width = 234.000000000000000000
+    Size.Height = 483.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
     object lblName: TLabel
+      StyledSettings = [Size, FontColor]
       Position.X = 8.000000000000000000
       Position.Y = 16.000000000000000000
       Size.Width = 65.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
       TextSettings.Trimming = None
       Text = 'Name'
       TabOrder = 0
     end
     object lblMass: TLabel
+      StyledSettings = [Size, FontColor]
       Position.X = 8.000000000000000000
       Position.Y = 46.000000000000000000
       Size.Width = 65.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
       TextSettings.Trimming = None
       Text = 'Mass'
       TabOrder = 1
@@ -49,9 +55,9 @@ object PropertiesFrame: TPropertiesFrame
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 2
-      Position.X = 48.000000000000000000
+      Position.X = 64.000000000000000000
       Position.Y = 16.000000000000000000
-      Size.Width = 148.000000000000000000
+      Size.Width = 162.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       OnChange = edtNameChange
@@ -61,12 +67,200 @@ object PropertiesFrame: TPropertiesFrame
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
       Cursor = crIBeam
-      Position.X = 48.000000000000000000
+      Position.X = 64.000000000000000000
       Position.Y = 46.000000000000000000
-      Size.Width = 148.000000000000000000
+      Size.Width = 162.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       OnChange = spnMassChange
+    end
+    object lblID: TLabel
+      StyledSettings = [Size, FontColor]
+      Position.X = 8.000000000000000000
+      Position.Y = 84.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.Trimming = None
+      Text = 'ID'
+      TabOrder = 4
+    end
+    object lblIDText: TLabel
+      Position.X = 48.000000000000000000
+      Position.Y = 84.000000000000000000
+      Size.Width = 148.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Trimming = None
+      TabOrder = 5
+    end
+    object lblPosition: TLabel
+      StyledSettings = [Size, FontColor]
+      Position.X = 8.000000000000000000
+      Position.Y = 120.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.Trimming = None
+      Text = 'Position'
+      TabOrder = 6
+    end
+    object lblVelocity: TLabel
+      StyledSettings = [Size, FontColor]
+      Position.X = 8.000000000000000000
+      Position.Y = 160.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.Trimming = None
+      Text = 'Velocity'
+      TabOrder = 7
+    end
+    object pnlPosition: TPanel
+      Anchors = [akLeft, akTop, akRight]
+      Position.X = 63.000000000000000000
+      Position.Y = 120.000000000000000000
+      Size.Width = 163.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 8
+      object nbPositionX: TNumberBox
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 8
+        Cursor = crSizeWE
+        Min = -10000.000000000000000000
+        Max = 10000.000000000000000000
+        ValueType = Float
+        KeyboardType = NumbersAndPunctuation
+        Position.X = 22.000000000000000000
+        HorzIncrement = 0.100000000000000000
+        Size.Width = 59.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnChange = nbPositionXChange
+      end
+      object nbPositionY: TNumberBox
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Anchors = []
+        TabOrder = 9
+        Cursor = crSizeWE
+        Min = -10000.000000000000000000
+        Max = 10000.000000000000000000
+        ValueType = Float
+        KeyboardType = NumbersAndPunctuation
+        Position.X = 104.000000000000000000
+        HorzIncrement = 0.100000000000000000
+        Size.Width = 59.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnChange = nbPositionYChange
+      end
+      object lblPositionX: TLabel
+        Align = Scale
+        Anchors = []
+        StyledSettings = [FontColor]
+        Size.Width = 24.238168716430660000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Roboto'
+        TextSettings.Font.Size = 13.000000000000000000
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        TextSettings.HorzAlign = Center
+        TextSettings.Trimming = None
+        Text = 'X'
+        TabOrder = 10
+      end
+      object lblPositionY: TLabel
+        StyledSettings = [FontColor]
+        Position.X = 82.000000000000000000
+        Size.Width = 22.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Roboto'
+        TextSettings.Font.Size = 13.000000000000000000
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        TextSettings.HorzAlign = Center
+        TextSettings.VertAlign = Trailing
+        TextSettings.Trimming = None
+        Text = 'Y'
+        TabOrder = 11
+      end
+    end
+    object pnlVelocity: TPanel
+      Anchors = [akLeft, akTop, akRight]
+      Position.X = 64.000000000000000000
+      Position.Y = 160.000000000000000000
+      Size.Width = 162.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 9
+      object lblVelocityX: TLabel
+        Align = Scale
+        Anchors = []
+        StyledSettings = [FontColor]
+        Size.Width = 24.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Roboto'
+        TextSettings.Font.Size = 13.000000000000000000
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        TextSettings.HorzAlign = Center
+        TextSettings.Trimming = None
+        Text = 'X'
+        TabOrder = 9
+      end
+      object lblVelocityY: TLabel
+        StyledSettings = [FontColor]
+        Position.X = 82.000000000000000000
+        Size.Width = 22.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Roboto'
+        TextSettings.Font.Size = 13.000000000000000000
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        TextSettings.HorzAlign = Center
+        TextSettings.VertAlign = Trailing
+        TextSettings.Trimming = None
+        Text = 'Y'
+        TabOrder = 10
+      end
+      object nbVelocityX: TNumberBox
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 7
+        Cursor = crSizeWE
+        Min = -10000.000000000000000000
+        Max = 10000.000000000000000000
+        ValueType = Float
+        KeyboardType = NumbersAndPunctuation
+        Position.X = 22.000000000000000000
+        HorzIncrement = 0.100000000000000000
+        Size.Width = 59.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnChange = nbVelocityXChange
+      end
+      object nbVelocityY: TNumberBox
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Anchors = []
+        TabOrder = 8
+        Cursor = crSizeWE
+        Min = -10000.000000000000000000
+        Max = 10000.000000000000000000
+        ValueType = Float
+        KeyboardType = NumbersAndPunctuation
+        Position.X = 104.000000000000000000
+        HorzIncrement = 0.100000000000000000
+        Size.Width = 59.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnChange = nbVelocityYChange
+      end
     end
   end
 end

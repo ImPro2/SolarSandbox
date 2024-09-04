@@ -3,62 +3,73 @@ unit Simulation;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, 
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, System.Generics.Collections,
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   FMX.Controls.Presentation, FMX.Objects,
   SpaceObject;
 
 type
-  TCircleList = array of TCircle;
+  TCircleDictionary = TDictionary<uint32, TCircle>;
 
   TSimulationFrame = class(TFrame)
-  private
+    PaintBox: TPaintBox;
+    procedure PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
 
   public
     procedure Init();
-
-  public
     procedure OnUpdate(fDeltaTime: float32); //in s
-    procedure OnSpaceObjectsChange();
+    procedure OnGamePause();
+    procedure OnGameResume();
 
   private
-    FCircles: TCircleList;
-    // Referring to circles with respect to the space bodies by index is not preferrable.
-    // Maybe use an unordered map?
+    FPlay: boolean;
   end;
 
 implementation
 
 procedure TSimulationFrame.Init();
 begin
-  SetLength(FCircles, Length(GSpaceObjects));
-  for var i := 0 to Length(FCircles) do
-  begin
-    FCircles[i] := TCircle.Create(Self);
-    var SpaceObject := GSpaceObjects[i];
-
-    with FCircles[i] do
-    begin
-      Position.X := SpaceObject.PositionX;
-      Position.Y := SpaceObject.PositionY;
-      Scale.X    := SpaceObject.Mass;
-      Scale.Y    := SpaceObject.Mass;
-    end;
-  end;
+  FPlay := True;
 end;
 
 procedure TSimulationFrame.OnUpdate(fDeltaTime: float32);
 begin
-  for var i := 0 to Length(FCircles) do
+  if FPlay then
   begin
+    for var i: int32 := 0 to Length(GSpaceObjects) - 1 do
+    begin
+      GSpaceObjects[i].PositionX := GSpaceObjects[i].PositionX + GSpaceObjects[i].VelocityX * fDeltaTime;
+      GSpaceObjects[i].PositionY := GSpaceObjects[i].PositionY + GSpaceObjects[i].VelocityY * fDeltaTime;
+    end;
+  end;
+
+  Repaint();
+end;
+
+procedure TSimulationFrame.OnGamePause();
+begin
+  FPlay := False;
+end;
+
+procedure TSimulationFrame.OnGameResume();
+begin
+  FPlay := True;
+end;
+
+procedure TSimulationFrame.PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
+begin
+  Canvas.BeginScene();
+
+  for var spaceObj: TSpaceObject in GSpaceObjects do
+  begin
+    var centerPoint: TPointF := TPointF.Create(spaceObj.PositionX, spaceObj.PositionY);
+    var rect: TRectF := TRectF.Create(centerPoint, spaceObj.Mass, spaceObj.Mass);
+
+    Canvas.FillEllipse(rect, 1.0, TBrush.Create(TBrushKind.Solid, TAlphaColors.Red));
 
   end;
 
-end;
-
-procedure TSimulationFrame.OnSpaceObjectsChange;
-begin
-
+  Canvas.EndScene();
 end;
 
 {$R *.fmx}

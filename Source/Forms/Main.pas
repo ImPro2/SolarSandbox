@@ -10,6 +10,7 @@ uses
 
 type
   TMainForm = class(TForm)
+    StyleBook: TStyleBook;
     procedure FormCreate(Sender: TObject);
   private
     FLastTime: int64;
@@ -30,6 +31,7 @@ var
 implementation
 
 {$R *.fmx}
+{$R *.Surface.fmx MSWINDOWS}
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var

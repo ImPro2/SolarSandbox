@@ -23,71 +23,54 @@ type
     procedure btnAddSpaceObjectClick(Sender: TObject);
     procedure GridCellClick(const Column: TColumn; const Row: Integer);
   public
-    constructor Create(AOwner: TComponent); override;
-
     procedure Init();
-
-  public
-    OnAddSpaceObject: TAddSpaceObjectEvent;
-    OnRemoveSpaceObject: TRemoveSpaceObjectEvent;
-    OnSpaceObjectSelected: TSpaceObjectSelectedEvent;
-
-    procedure OnSpaceObjectsChange();
+    procedure OnUpdate();
 
   private
-    procedure SetSelectedSpaceObject(const Index: int32);
+    procedure SetSelectedSpaceObject(const ID: uint32);
 
   private
-    FGameFrame: TFrame;
-    FSelectedSpaceObject: int32;
+    FSelectedSpaceObjectID: uint32;
 
   public
-    property SelectedSpaceObject: int32 read FSelectedSpaceObject write SetSelectedSpaceObject;
+    property SelectedSpaceObjectID: uint32 read FSelectedSpaceObjectID write SetSelectedSpaceObject;
   end;
 
 implementation
 
-constructor TSceneFrame.Create(AOwner: TComponent);
-begin
-  inherited;
-  FGameFrame := TFrame(AOwner);
-end;
-
 procedure TSceneFrame.Init();
 begin
   Grid.RowCount := Length(GSpaceObjects);
+  FSelectedSpaceObjectID := 0;
 end;
 
-procedure TSceneFrame.OnSpaceObjectsChange();
+procedure TSceneFrame.OnUpdate();
 begin
   Grid.RowCount := Length(GSpaceObjects);
   Grid.BeginUpdate();
   Grid.EndUpdate();
 end;
 
-procedure TSceneFrame.SetSelectedSpaceObject(const Index: int32);
+procedure TSceneFrame.SetSelectedSpaceObject(const ID: uint32);
 begin
-  FSelectedSpaceObject := Index;
-  Grid.SelectRow(Index);
+  FSelectedSpaceObjectID := ID;
+  var idx: int32 := SpaceObjectIndexFromID(ID);
+  Grid.SelectRow(idx);
 
-  Logger.Info('Space Object ' + GSpaceObjects[FSelectedSpaceObject].Name + ' is selected');
+  Logger.Info('Space Object ' + GSpaceObjects[idx].Name + ' is selected');
 end;
 
 procedure TSceneFrame.btnAddSpaceObjectClick(Sender: TObject);
 begin
-  if Assigned(OnAddSpaceObject) then
-  begin
-    var SpaceObject: TSpaceObject := TSpaceObject.Create(edtName.Text);
-
-    OnAddSpaceObject(SpaceObject);
-  end;
-
+  var SpaceObject: TSpaceObject := TSpaceObject.Create(edtName.Text);
+  GSpaceObjects := GSpaceObjects + [SpaceObject];
+  Grid.RowCount := Length(GSpaceObjects);
 end;
 
 procedure TSceneFrame.GridCellClick(const Column: TColumn; const Row: Integer);
 begin
-  SelectedSpaceObject := Row;
-  OnSpaceObjectSelected(GSpaceObjects[Row]);
+  var ID: uint32 := GSpaceObjects[Row].ID;
+  SelectedSpaceObjectID := ID;
 end;
 
 procedure TSceneFrame.GridGetValue(Sender: TObject; const ACol, ARow: Integer;

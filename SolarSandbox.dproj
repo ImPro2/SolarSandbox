@@ -109,6 +109,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_DcuOutput>.\Intermediates\$(Platform)-$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>.\Binaries\$(Platform)-$(Config)</DCC_ExeOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
@@ -168,6 +169,11 @@
         </DCCReference>
         <DCCReference Include="Source\Game\Properties.pas">
             <Form>PropertiesFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="Source\Game\PlayBar.pas">
+            <Form>PlayBarFrame</Form>
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>

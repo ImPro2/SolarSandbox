@@ -1,5 +1,13 @@
 object SimulationFrame: TSimulationFrame
+  Align = Client
   Size.Width = 320.000000000000000000
   Size.Height = 240.000000000000000000
   Size.PlatformDefault = False
+  object PaintBox: TPaintBox
+    Align = Client
+    Size.Width = 320.000000000000000000
+    Size.Height = 240.000000000000000000
+    Size.PlatformDefault = False
+    OnPaint = PaintBoxPaint
+  end
 end

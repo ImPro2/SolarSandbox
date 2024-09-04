@@ -10,8 +10,8 @@ object SceneFrame: TSceneFrame
     Size.Width = 120.000000000000000000
     Size.Height = 17.000000000000000000
     Size.PlatformDefault = False
-    TextSettings.Font.Family = 'Fira Code'
-    TextSettings.Font.Size = 18.000000000000000000
+    TextSettings.Font.Family = 'Roboto'
+    TextSettings.Font.Size = 21.000000000000000000
     TextSettings.Font.StyleExt = {00070000000000000004000000}
     TextSettings.Trimming = None
     Text = 'Scene'
@@ -36,12 +36,12 @@ object SceneFrame: TSceneFrame
       Options = [AlternatingRowBackground, ColumnResize, ColLines, RowLines, RowSelect, CancelEditingByDefault, AutoDisplacement]
       OnGetValue = GridGetValue
       OnCellClick = GridCellClick
-      Viewport.Width = 199.000000000000000000
-      Viewport.Height = 526.000000000000000000
+      Viewport.Width = 179.000000000000000000
+      Viewport.Height = 506.000000000000000000
       object NameColumn: TStringColumn
         Header = 'Space Object Name'
         HeaderSettings.TextSettings.WordWrap = False
-        Size.Width = 113.000000000000000000
+        Size.Width = 185.000000000000000000
       end
     end
   end
