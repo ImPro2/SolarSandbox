@@ -97,9 +97,16 @@ begin
   FProjectInfo := ProjectInfo;
   FInitialized := True;
 
-  SetLength(GSpaceObjects, 1);
+  SetLength(GSpaceObjects, 2);
+
   GSpaceObjects[0] := TSpaceObject.Create('Earth');
-  GSpaceObjects[0].Mass := 1;
+  GSpaceObjects[0].Mass := 100;
+
+  GSpaceObjects[1] := TSpaceObject.Create('Moon');
+  GSpaceObjects[1].PositionX := 0.0;
+  GSpaceObjects[1].PositionY := 60.0;
+  GSpaceObjects[1].VelocityY := 0;
+  GSpaceObjects[1].Mass := 1;
 
   FSceneFrame.Init();
   FSceneFrame.Visible := True;

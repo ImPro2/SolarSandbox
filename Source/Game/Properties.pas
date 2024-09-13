@@ -68,6 +68,11 @@ begin
 
     nbVelocityX.Value := spaceObj.VelocityX;
     nbVelocityY.Value := spaceObj.VelocityY;
+
+    nbPositionX.Repaint();
+    nbPositionY.Repaint();
+    nbVelocityX.Repaint();
+    nbVelocityY.Repaint();
   end;
 end;
 
