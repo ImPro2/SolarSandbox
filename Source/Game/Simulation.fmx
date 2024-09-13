@@ -8,6 +8,7 @@ object SimulationFrame: TSimulationFrame
     Size.Width = 320.000000000000000000
     Size.Height = 240.000000000000000000
     Size.PlatformDefault = False
+    OnMouseWheel = PaintBoxMouseWheel
     OnPaint = PaintBoxPaint
   end
 end

@@ -99,8 +99,7 @@ begin
 
   SetLength(GSpaceObjects, 1);
   GSpaceObjects[0] := TSpaceObject.Create('Earth');
-  GSpaceObjects[0].VelocityX := 10;
-  GSpaceObjects[0].VelocityY := 10;
+  GSpaceObjects[0].Mass := 1;
 
   FSceneFrame.Init();
   FSceneFrame.Visible := True;
