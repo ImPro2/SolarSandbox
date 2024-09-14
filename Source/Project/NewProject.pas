@@ -17,8 +17,9 @@ type
     lblName: TLabel;
     lblPath: TLabel;
     procedure OnNewProjectClick(Sender: TObject);
+    procedure btnPathSelectorClick(Sender: TObject);
   private
-    { Private declarations }
+    FSavePath: string;
   public
     OnNewProject: TNewProjectEvent;
   end;
@@ -27,6 +28,15 @@ implementation
 
 {$R *.fmx}
 
+procedure TNewProjectFrame.btnPathSelectorClick(Sender: TObject);
+begin
+  var SaveDialog: TSaveDialog := TSaveDialog.Create(Self);
+  SaveDialog.InitialDir := 'C:\';
+
+  if SaveDialog.Execute() then
+    FSavePath := SaveDialog.FileName;
+end;
+
 procedure TNewProjectFrame.OnNewProjectClick(Sender: TObject);
 begin
   if Assigned(OnNewProject) then
@@ -34,15 +44,7 @@ begin
     var info: TProjectInfo;
 
     info.sName := edtProjectName.Text;
-    info.sPath := '';
-
-    SetLength(info.SpaceObjects, 2);
-    info.SpaceObjects[0] := TSpaceObject.Create('Earth');
-    info.SpaceObjects[0].Mass := 100;
-
-    info.SpaceObjects[1] := TSpaceObject.Create('Moon');
-    info.SpaceObjects[1].PositionY := 10.0;
-    info.SpaceObjects[1].Mass := 10;
+    info.sPath := FSavePath;
 
     OnNewProject(info);
   end;

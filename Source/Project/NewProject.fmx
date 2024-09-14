@@ -32,6 +32,7 @@ object NewProjectFrame: TNewProjectFrame
     TabOrder = 3
     Text = '...'
     TextSettings.Trimming = None
+    OnClick = btnPathSelectorClick
   end
   object lblName: TLabel
     Position.X = 48.000000000000000000

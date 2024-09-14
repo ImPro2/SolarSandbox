@@ -6,9 +6,9 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, 
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   Quick.Logger, Quick.Console, Quick.Logger.Provider.Console, Quick.Logger.Provider.Files,
-  FMX.Objects, FMX.Controls.Presentation, FMX.Menus,
+  FMX.Objects, FMX.Controls.Presentation, FMX.Menus, Windows,
   Quick.YAML, Quick.YAML.Serializer,
-  ProjectInfo, ProjectSerializer, SpaceObject, Scene, Simulation, Properties, PlayBar;
+  ProjectInfo, SpaceObject, Scene, Simulation, Properties, PlayBar;
 
 type
   TGameFrame = class(TFrame)
@@ -33,6 +33,10 @@ type
     pnlLeft: TPanel;
     pnlProperties: TPanel;
     pnlRight: TPanel;
+    procedure miFileSaveClick(Sender: TObject);
+    procedure miFileSaveAsClick(Sender: TObject);
+    procedure miFileOpenClick(Sender: TObject);
+    procedure miFileCloseClick(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
 
@@ -60,6 +64,10 @@ type
     procedure InitFrames();
     procedure InitSpaceObjects();
     procedure Update(fDeltaTime: float32); // in s
+
+    procedure SaveProject();
+    procedure SaveProjectAs();
+    procedure OpenProject();
 
     property Initialized: Boolean read FInitialized;
   end;
@@ -124,6 +132,7 @@ end;
 
 procedure TGameFrame.Update(fDeltaTime: float32);
 begin
+  FSceneFrame.OnUpdate();
   FPropertiesFrame.OnUpdate(FSceneFrame.SelectedSpaceObjectID);
   FSimulationFrame.OnUpdate(fDeltaTime);
 end;
@@ -152,6 +161,60 @@ procedure TGameFrame.OnGameResume();
 begin
   Logger.Info('Game Resume');
   FSimulationFrame.Simulate := True;
+end;
+
+procedure TGameFrame.SaveProject();
+begin
+  FProjectInfo.SpaceObjects := Copy(GSpaceObjects, 0, Length(GSpaceObjects));
+  SerializeProject(FProjectInfo);
+end;
+
+procedure TGameFrame.SaveProjectAs();
+begin
+  var SaveDialog: TSaveDialog := TSaveDialog.Create(Self);
+
+  SaveDialog.InitialDir := '.';
+
+  if SaveDialog.Execute() then
+  begin
+    FProjectInfo.sPath := SaveDialog.FileName;
+    SaveProject();
+  end;
+end;
+
+procedure TGameFrame.OpenProject();
+begin
+  var OpenDialog: TOpenDialog := TOpenDialog.Create(Self);
+
+  OpenDialog.Options := [TOpenOption.ofPathMustExist];
+
+  if OpenDialog.Execute() then
+    FProjectInfo.sPath := OpenDialog.FileName;
+
+  SetLength(FProjectInfo.SpaceObjects, 0);
+  DeserializeProject(FProjectInfo);
+
+  GSpaceObjects := Copy(FProjectInfo.SpaceObjects, 0, Length(FProjectInfo.SpaceObjects));
+end;
+
+procedure TGameFrame.miFileCloseClick(Sender: TObject);
+begin
+  FMainForm.Close();
+end;
+
+procedure TGameFrame.miFileOpenClick(Sender: TObject);
+begin
+  OpenProject();
+end;
+
+procedure TGameFrame.miFileSaveAsClick(Sender: TObject);
+begin
+  SaveProjectAs();
+end;
+
+procedure TGameFrame.miFileSaveClick(Sender: TObject);
+begin
+  SaveProject();
 end;
 
 {$R *.fmx}

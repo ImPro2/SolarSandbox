@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{533C3C97-E29A-4514-AFB2-07036D1366EC}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Source\SolarSandbox.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SolarSandbox">
+        <MSBuild Projects="Source\SolarSandbox.dproj"/>
+    </Target>
+    <Target Name="SolarSandbox:Clean">
+        <MSBuild Projects="Source\SolarSandbox.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SolarSandbox:Make">
+        <MSBuild Projects="Source\SolarSandbox.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SolarSandbox"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SolarSandbox:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SolarSandbox:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

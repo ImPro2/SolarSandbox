@@ -108,8 +108,8 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_DcuOutput>.\Intermediates\$(Platform)-$(Config)</DCC_DcuOutput>
-        <DCC_ExeOutput>.\Binaries\$(Platform)-$(Config)</DCC_ExeOutput>
+        <DCC_DcuOutput>..\Intermediates\$(Platform)-$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>..\Binaries\$(Platform)-$(Config)</DCC_ExeOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
@@ -130,53 +130,59 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Source\Project\NewProject.pas">
+        <DCCReference Include="Forms\Main.pas">
+            <Form>MainForm</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="Project\NewProject.pas">
             <Form>NewProjectFrame</Form>
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="Source\Project\OpenProject.pas">
+        <DCCReference Include="Project\OpenProject.pas">
             <Form>OpenProjectFrame</Form>
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="Source\Project\ProjectInfo.pas"/>
-        <DCCReference Include="Source\Project\ProjectSelector.pas">
+        <DCCReference Include="Project\ProjectInfo.pas"/>
+        <DCCReference Include="Project\ProjectSelector.pas">
             <Form>ProjectSelectorFrame</Form>
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="Source\Project\ProjectSerializer.pas"/>
-        <DCCReference Include="Source\Game\Game.pas">
+        <DCCReference Include="Game\Game.pas">
             <Form>GameFrame</Form>
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="Source\Game\Scene.pas">
-            <Form>SceneFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="Source\Game\Simulation.pas">
-            <Form>SimulationFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="Source\Game\SpaceObject.pas"/>
-        <DCCReference Include="Source\Forms\Main.pas">
-            <Form>MainForm</Form>
-            <FormType>fmx</FormType>
-        </DCCReference>
-        <DCCReference Include="Source\Game\Properties.pas">
-            <Form>PropertiesFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="Source\Game\PlayBar.pas">
+        <DCCReference Include="Game\PlayBar.pas">
             <Form>PlayBarFrame</Form>
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
+        <DCCReference Include="Game\Properties.pas">
+            <Form>PropertiesFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="Game\Scene.pas">
+            <Form>SceneFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="Game\Simulation.pas">
+            <Form>SimulationFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="Game\SpaceObject.pas"/>
+        <DCCReference Include="..\Dependencies\Neslib.Yaml\Neslib.LibYaml.pas"/>
+        <DCCReference Include="..\Dependencies\Neslib.Yaml\Neslib.Yaml.pas"/>
+        <DCCReference Include="..\Dependencies\Neslib.Yaml\Neslib\Neslib.Collections.pas"/>
+        <DCCReference Include="..\Dependencies\Neslib.Yaml\Neslib\Neslib.Hash.pas"/>
+        <DCCReference Include="..\Dependencies\Neslib.Yaml\Neslib\Neslib.System.pas"/>
+        <DCCReference Include="..\Dependencies\Neslib.Yaml\Neslib\Neslib.SysUtils.pas"/>
+        <DCCReference Include="..\Dependencies\Neslib.Yaml\Neslib\Neslib.Utf8.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -218,7 +224,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\SolarSandbox.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\Binaries\Win32-Debug\SolarSandbox.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SolarSandbox.exe</RemoteName>
                         <Overwrite>true</Overwrite>

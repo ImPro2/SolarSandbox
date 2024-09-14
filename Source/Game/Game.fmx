@@ -14,20 +14,25 @@ object GameFrame: TGameFrame
         Locked = True
         ShortCut = 16467
         Text = 'Save'
+        OnClick = miFileSaveClick
       end
       object miFileSaveAs: TMenuItem
         Locked = True
         ShortCut = 24659
         Text = 'Save As'
+        OnClick = miFileSaveAsClick
       end
       object miFileOpen: TMenuItem
         Locked = True
         ShortCut = 16463
         Text = 'Open'
+        OnClick = miFileOpenClick
       end
       object miFileClose: TMenuItem
         Locked = True
+        ShortCut = 32883
         Text = 'Close'
+        OnClick = miFileCloseClick
       end
     end
     object miEdit: TMenuItem
