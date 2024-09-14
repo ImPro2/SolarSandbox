@@ -57,6 +57,8 @@ type
 
   public
     procedure Init(const ProjectInfo: TProjectInfo; NewProject: Boolean);
+    procedure InitFrames();
+    procedure InitSpaceObjects();
     procedure Update(fDeltaTime: float32); // in s
 
     property Initialized: Boolean read FInitialized;
@@ -97,17 +99,17 @@ begin
   FProjectInfo := ProjectInfo;
   FInitialized := True;
 
-  SetLength(GSpaceObjects, 2);
+  InitSpaceObjects();
+  InitFrames();
+end;
 
-  GSpaceObjects[0] := TSpaceObject.Create('Earth');
-  GSpaceObjects[0].Mass := 100;
+procedure TGameFrame.InitSpaceObjects();
+begin
+  GSpaceObjects := Copy(FProjectInfo.SpaceObjects, 0, Length(FProjectInfo.SpaceObjects));
+end;
 
-  GSpaceObjects[1] := TSpaceObject.Create('Moon');
-  GSpaceObjects[1].PositionX := 0.0;
-  GSpaceObjects[1].PositionY := 60.0;
-  GSpaceObjects[1].VelocityY := 0;
-  GSpaceObjects[1].Mass := 1;
-
+procedure TGameFrame.InitFrames();
+begin
   FSceneFrame.Init();
   FSceneFrame.Visible := True;
 
@@ -129,23 +131,27 @@ end;
 procedure TGameFrame.OnGameStart();
 begin
   Logger.Info('Game Start');
+  FSimulationFrame.Simulate := True;
+  FProjectInfo.SpaceObjects := Copy(GSpaceObjects, 0, Length(GSpaceObjects));
 end;
 
 procedure TGameFrame.OnGameStop();
 begin
   Logger.Info('Game Stop');
+  GSpaceObjects := Copy(FProjectInfo.SpaceObjects, 0, Length(FProjectInfo.SpaceObjects));
+  FSimulationFrame.Simulate := False;
 end;
 
 procedure TGameFrame.OnGamePause();
 begin
   Logger.Info('Game Pause');
-  FSimulationFrame.OnGamePause();
+  FSimulationFrame.Simulate := False;
 end;
 
 procedure TGameFrame.OnGameResume();
 begin
   Logger.Info('Game Resume');
-  FSimulationFrame.OnGameResume();
+  FSimulationFrame.Simulate := True;
 end;
 
 {$R *.fmx}

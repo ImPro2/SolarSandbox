@@ -13,23 +13,21 @@ type
   TPositionDictionary = TDictionary<uint32, TRectF>;
 
   TSimulationFrame = class(TFrame)
-    PaintBox: TPaintBox;
-    procedure PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
+    Image: TImage;
+    //procedure PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
     procedure FrameResize(Sender: TObject);
-    procedure PaintBoxMouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; var Handled: Boolean);
+    procedure FrameMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; var Handled: Boolean);
     procedure FrameMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
+    procedure ImagePaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
 
   public
     procedure Init();
     procedure OnUpdate(fDeltaTime: float32); //in s
-    procedure OnGamePause();
-    procedure OnGameResume();
 
   private
     FLastMouseX, FLastMouseY: float32;
     FMouseDeltaNDC: TVector3D;
-    FPlay: boolean;
+    FSimulate: boolean;
 
     FViewMatrix, FProjectionMatrix, FProjectionInverseMatrix: TMatrix3D;
     FViewProjectionMatrix: TMatrix3D;
@@ -41,10 +39,14 @@ type
     FAspectRatio: float32;
 
     FPositionDictionary: TPositionDictionary;
+
+  public
+    property Simulate: boolean read FSimulate write FSimulate;
+
   private
     procedure RecalculateViewProjectionMatrix();
-    procedure CameraMovement(fDeltaTime: float32);
-    procedure UpdateSpaceBody(fDeltaTime: float32; i: int32);
+    procedure UpdateCameraMovement(fDeltaTime: float32);
+    procedure UpdateSpaceBodies(fDeltaTime: float32);
     procedure UpdateSpaceBodyPosition(fDeltaTime: float32; i: int32);
     procedure UpdateSpaceBodyRendering(i: int32);
   end;
@@ -53,10 +55,11 @@ implementation
 
 procedure TSimulationFrame.Init();
 begin
-  Self.OnResize        := Self.FrameResize;
-  PaintBox.OnMouseMove := Self.FrameMouseMove;
+  Self.OnResize      := Self.FrameResize;
+  Image.OnMouseMove  := Self.FrameMouseMove;
+  Image.OnMouseWheel := Self.FrameMouseWheel;
 
-  FPlay := True;
+  FSimulate := False;
 
   FCameraPosition  := TVector3D.Create(0.0, 0.0, 0.0);
   FCameraSpeed     := 1.0;
@@ -71,23 +74,21 @@ end;
 
 procedure TSimulationFrame.OnUpdate(fDeltaTime: float32);
 begin
-  if FPlay then
-  begin
-    CameraMovement(fDeltaTime);
-
-    for var i: int32 := 0 to Length(GSpaceObjects) - 1 do
-    begin
-       UpdateSpaceBody(fDeltaTime, i);
-    end;
-  end;
+  UpdateCameraMovement(fDeltaTime);
+  UpdateSpaceBodies(fDeltaTime);
 
   Repaint();
 end;
 
-procedure TSimulationFrame.UpdateSpaceBody(fDeltaTime: float32; i: int32);
+procedure TSimulationFrame.UpdateSpaceBodies(fDeltaTime: float32);
 begin
-  UpdateSpaceBodyPosition(fDeltaTime, i);
-  UpdateSpaceBodyRendering(i);
+  for var i: int32 := 0 to Length(GSpaceObjects) - 1 do
+  begin
+    if FSimulate then
+      UpdateSpaceBodyPosition(fDeltaTime, i);
+
+    UpdateSpaceBodyRendering(i);
+  end;
 end;
 
 procedure TSimulationFrame.UpdateSpaceBodyPosition(fDeltaTime: float32; i: int32);
@@ -162,30 +163,20 @@ begin
 
   // Convert to Screen Space Coordinates
 
-  var screentopleft: TPointF := TPointF.Create(
+  var ScreenTopLeft: TPointF := TPointF.Create(
     (NDCTopLeft.X + 1.0) * 0.5 * Width,
     (1.0 - NDCTopLeft.Y) * 0.5 * Height
   );
 
-  var screenbtmright: TPointF := TPointF.Create(
+  var ScreenBtmRight: TPointF := TPointF.Create(
     (NDCBtmRight.X + 1.0) * 0.5 * Width,
     (1.0 - NDCBtmRight.Y) * 0.5 * Height
   );
 
   FPositionDictionary[GSpaceObjects[i].ID] := TRectF.Create(
-    TPointF.Create(screentopLeft.X,  screentopLeft.Y),
-    TPointF.Create(screenbtmright.X, screenbtmright.Y)
+    TPointF.Create(ScreenTopLeft.X,  ScreenTopLeft.Y),
+    TPointF.Create(ScreenBtmRight.X, ScreenBtmRight.Y)
   );
-end;
-
-procedure TSimulationFrame.OnGamePause();
-begin
-  FPlay := False;
-end;
-
-procedure TSimulationFrame.OnGameResume();
-begin
-  FPlay := True;
 end;
 
 procedure TSimulationFrame.RecalculateViewProjectionMatrix();
@@ -204,7 +195,7 @@ begin
   FProjectionInverseMatrix := FProjectionMatrix.Inverse();
 end;
 
-procedure TSimulationFrame.CameraMovement(fDeltaTime: float32);
+procedure TSimulationFrame.UpdateCameraMovement(fDeltaTime: float32);
 begin
   var bRightMouseButton: boolean := ((GetKeyState(VK_RBUTTON) and $80) <> 0);
 
@@ -243,7 +234,7 @@ begin
   RecalculateViewProjectionMatrix();
 end;
 
-procedure TSimulationFrame.PaintBoxMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; var Handled: Boolean);
+procedure TSimulationFrame.FrameMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; var Handled: Boolean);
 begin
   // This makes the zooming smooth somehow
 
@@ -253,12 +244,15 @@ begin
   RecalculateViewProjectionMatrix();
 end;
 
-procedure TSimulationFrame.PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
+procedure TSimulationFrame.ImagePaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
 begin
   if FPositionDictionary.IsEmpty then
     Exit;
 
   Canvas.BeginScene();
+
+  Canvas.IntersectClipRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)));
+  Canvas.ClearRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)), TAlphaColors.Black);
 
   // Draw space objects
 
