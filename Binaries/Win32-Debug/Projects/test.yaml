@@ -1,5 +1,7 @@
 ---
-Name: asdf
+Name: test
+ThumbnailPath: C:\Dev\Delphi\SolarSandbox\Binaries\Win32-Debug\Projects\test.bmp
+Notes: 
 Space Objects:
 - Name: Earth
   ID: 1398622912

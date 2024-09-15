@@ -1,5 +1,7 @@
 ---
 Name: Solar System
+ThumbnailPath: C:\Dev\Delphi\SolarSandbox\Binaries\Win32-Debug\Templates\SolarSystem.bmp
+Notes: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 Space Objects:
 - Name: Earth
   ID: 1398622912
@@ -10,10 +12,37 @@ Space Objects:
   VelocityY: 0
 - Name: Moon
   ID: 493501383
-  Mass: 10
-  PositionX: 0
-  PositionY: 10
+  Mass: 5
+  PositionX: 4
+  PositionY: 7.90000009536743
   VelocityX: 0
   VelocityY: 0
-Notes: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+- Name: a
+  ID: 1726654979
+  Mass: 10
+  PositionX: -9.69999980926514
+  PositionY: -11.1999998092651
+  VelocityX: 0
+  VelocityY: 0
+- Name: a
+  ID: 1918853651
+  Mass: 10
+  PositionX: 20.5
+  PositionY: -8.30000019073486
+  VelocityX: 0
+  VelocityY: 0
+- Name: a
+  ID: 521370726
+  Mass: 20
+  PositionX: -18.6000003814697
+  PositionY: 11.3999996185303
+  VelocityX: 0
+  VelocityY: 0
+- Name: a
+  ID: 1119783426
+  Mass: 25
+  PositionX: 0
+  PositionY: -20.2000007629395
+  VelocityX: 0
+  VelocityY: 0
 ...

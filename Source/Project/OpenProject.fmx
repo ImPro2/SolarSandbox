@@ -1,7 +1,7 @@
 object OpenProjectFrame: TOpenProjectFrame
   Align = Client
-  Size.Width = 622.000000000000000000
-  Size.Height = 396.000000000000000000
+  Size.Width = 722.000000000000000000
+  Size.Height = 423.000000000000000000
   Size.PlatformDefault = False
   object RecentProjectsGrid: TGrid
     Anchors = [akLeft, akTop, akRight, akBottom]
@@ -9,17 +9,23 @@ object OpenProjectFrame: TOpenProjectFrame
     ClipChildren = True
     Position.X = 8.000000000000000000
     Position.Y = 73.000000000000000000
-    Size.Width = 606.000000000000000000
-    Size.Height = 310.000000000000000000
+    Size.Width = 706.000000000000000000
+    Size.Height = 337.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
+    RowHeight = 50.000000000000000000
     RowCount = 10
     Options = [AlternatingRowBackground, ColLines, RowLines, RowSelect, Header]
     OnGetValue = RecentProjectsGridGetValue
     OnResize = RecentProjectsGridResize
     OnCellDblClick = RecentProjectsGridCellDblClick
-    Viewport.Width = 602.000000000000000000
-    Viewport.Height = 285.000000000000000000
+    Viewport.Width = 686.000000000000000000
+    Viewport.Height = 312.000000000000000000
+    object colThumbnails: TImageColumn
+      HorzAlign = Center
+      HeaderSettings.TextSettings.WordWrap = False
+      Size.Width = 81.000000000000000000
+    end
     object colProjectNames: TStringColumn
       HorzAlign = Center
       Header = 'Name'
@@ -59,7 +65,7 @@ object OpenProjectFrame: TOpenProjectFrame
     Text = 'Search...'
     Position.X = 38.000000000000000000
     Position.Y = 43.000000000000000000
-    Size.Width = 576.000000000000000000
+    Size.Width = 676.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
   end
@@ -76,7 +82,7 @@ object OpenProjectFrame: TOpenProjectFrame
   end
   object btnOpenProject: TButton
     Anchors = [akTop, akRight]
-    Position.X = 508.000000000000000000
+    Position.X = 608.000000000000000000
     Position.Y = 8.000000000000000000
     Size.Width = 106.000000000000000000
     Size.Height = 25.000000000000000000

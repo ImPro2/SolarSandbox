@@ -3,7 +3,7 @@ unit Game;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, 
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, System.IOUtils,
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   Quick.Logger, Quick.Console, Quick.Logger.Provider.Console, Quick.Logger.Provider.Files,
   FMX.Objects, FMX.Controls.Presentation, FMX.Menus, Windows,
@@ -166,6 +166,8 @@ end;
 procedure TGameFrame.SaveProject();
 begin
   FProjectInfo.SpaceObjects := Copy(GSpaceObjects, 0, Length(GSpaceObjects));
+  FSimulationFrame.GenerateThumbnail(FProjectInfo.ThumbnailPath);
+
   SerializeProject(FProjectInfo);
 end;
 
@@ -177,7 +179,11 @@ begin
 
   if SaveDialog.Execute() then
   begin
-    FProjectInfo.sPath := SaveDialog.FileName;
+    FProjectInfo.sPath := System.IOUtils.TPath.GetFullPath(SaveDialog.FileName);
+
+    var FileName: string := System.IOUtils.TPath.GetFileNameWithoutExtension(SaveDialog.FileName);
+    FProjectInfo.ThumbnailPath := FileName + '.bmp';
+
     SaveProject();
   end;
 end;

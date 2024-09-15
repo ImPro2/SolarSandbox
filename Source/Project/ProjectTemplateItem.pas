@@ -33,6 +33,7 @@ procedure TProjectTemplateItemFrame.Init(ProjectInfo: TProjectInfo);
 begin
   FProjectInfo := ProjectInfo;
   lblCaption.Text := ProjectInfo.sName;
+  imgThumbnail.Bitmap := TBitmap.CreateFromFile(ProjectInfo.ThumbnailPath);
 end;
 
 procedure TProjectTemplateItemFrame.ButtonClick(Sender: TObject);

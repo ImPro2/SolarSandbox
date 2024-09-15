@@ -11,7 +11,6 @@ type
     SpaceObjects: TSpaceObjectList;
     Notes: string;
     ThumbnailPath: string;
-    Thumbnail: TBitmap;
   end;
 
   TProjectInfoList = array of TProjectInfo;
@@ -31,6 +30,7 @@ begin
   var Doc: IYamlDocument := TYamlDocument.CreateMapping();
 
   Doc.Root.AddOrSetValue('Name', ProjectInfo.sName);
+  Doc.Root.AddOrSetValue('ThumbnailPath', ProjectInfo.ThumbnailPath);
   Doc.Root.AddOrSetValue('Notes', ProjectInfo.Notes);
 
   var SpaceObjectSequence: TYamlNode := Doc.Root.AddOrSetSequence('Space Objects');
@@ -54,8 +54,9 @@ procedure DeserializeProject(var ProjectInfo: TProjectInfo);
 begin
   var Doc: IYamlDocument := TYamlDocument.Load(ProjectInfo.sPath);
 
-  ProjectInfo.sName := Doc.Root.Values['Name'];
-  ProjectInfo.Notes := Doc.Root.Values['Notes'];
+  ProjectInfo.sName         := Doc.Root.Values['Name'];
+  ProjectInfo.ThumbnailPath := Doc.Root.Values['ThumbnailPath'];
+  ProjectInfo.Notes         := Doc.Root.Values['Notes'];
 
   var SpaceObjectsMapping: TYamlNode := Doc.Root.Values['Space Objects'];
 

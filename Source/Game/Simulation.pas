@@ -5,9 +5,9 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, System.Generics.Collections,
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls, Math,
-  FMX.Controls.Presentation, FMX.Objects, System.Math.Vectors, Windows, FMX.Canvas.D2D,
+  FMX.Controls.Presentation, FMX.Objects, System.Math.Vectors, FMX.Canvas.D2D,
   Quick.Console, Quick.Logger,
-  SpaceObject;
+  SpaceObject, WindowsFunctions;
 
 type
   TPositionDictionary = TDictionary<uint32, TRectF>;
@@ -23,6 +23,8 @@ type
   public
     procedure Init();
     procedure OnUpdate(fDeltaTime: float32); //in s
+
+    procedure GenerateThumbnail(Path: string);
 
   private
     FLastMouseX, FLastMouseY: float32;
@@ -49,6 +51,8 @@ type
     procedure UpdateSpaceBodies(fDeltaTime: float32);
     procedure UpdateSpaceBodyPosition(fDeltaTime: float32; i: int32);
     procedure UpdateSpaceBodyRendering(i: int32);
+
+    procedure PaintToCanvas(Canvas: TCanvas);
   end;
 
 implementation
@@ -179,6 +183,14 @@ begin
   );
 end;
 
+procedure TSimulationFrame.GenerateThumbnail(Path: string);
+begin
+  var Bitmap: TBitmap := TBitmap.Create(Round(Width), Round(Height));
+  PaintToCanvas(Bitmap.Canvas);
+
+  Bitmap.SaveToFile(Path);
+end;
+
 procedure TSimulationFrame.RecalculateViewProjectionMatrix();
 var
   Left, Right, Top, Bottom: float32;
@@ -197,7 +209,7 @@ end;
 
 procedure TSimulationFrame.UpdateCameraMovement(fDeltaTime: float32);
 begin
-  var bRightMouseButton: boolean := ((GetKeyState(VK_RBUTTON) and $80) <> 0);
+  var bRightMouseButton := IsRightMouseButtonDown();
 
   if (bRightMouseButton) then
   begin
@@ -210,6 +222,27 @@ begin
   end;
 
   FMouseDeltaNDC := TVector3D.Zero;
+end;
+
+procedure TSimulationFrame.PaintToCanvas(Canvas: TCanvas);
+begin
+  if FPositionDictionary.IsEmpty then
+    Exit;
+
+  Canvas.BeginScene();
+
+  Canvas.IntersectClipRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)));
+  Canvas.ClearRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)), TAlphaColors.Black);
+
+  // Draw space objects
+
+  for var spaceObj: TSpaceObject in GSpaceObjects do
+  begin
+    var rectf: TRectF := FPositionDictionary[spaceObj.ID];
+    Canvas.FillEllipse(rectf, 1.0, TBrush.Create(TBrushKind.Solid, TAlphaColors.Red));
+  end;
+
+  Canvas.EndScene();
 end;
 
 procedure TSimulationFrame.FrameMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
@@ -246,23 +279,7 @@ end;
 
 procedure TSimulationFrame.ImagePaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
 begin
-  if FPositionDictionary.IsEmpty then
-    Exit;
-
-  Canvas.BeginScene();
-
-  Canvas.IntersectClipRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)));
-  Canvas.ClearRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)), TAlphaColors.Black);
-
-  // Draw space objects
-
-  for var spaceObj: TSpaceObject in GSpaceObjects do
-  begin
-    var rectf: TRectF := FPositionDictionary[spaceObj.ID];
-    Canvas.FillEllipse(rectf, 1.0, TBrush.Create(TBrushKind.Solid, TAlphaColors.Red));
-  end;
-
-  Canvas.EndScene();
+  PaintToCanvas(Canvas);
 end;
 
 {$R *.fmx}

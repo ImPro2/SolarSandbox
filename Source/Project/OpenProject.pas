@@ -19,6 +19,7 @@ type
     colProjectNames: TStringColumn;
     colProjectPaths: TStringColumn;
     btnOpenProject: TButton;
+    colThumbnails: TImageColumn;
     procedure btnOpenProjectClick(Sender: TObject);
     procedure RecentProjectsGridGetValue(Sender: TObject; const ACol, ARow: Integer; var Value: TValue);
     procedure RecentProjectsGridCellDblClick(const Column: TColumn; const Row: Integer);
@@ -48,11 +49,13 @@ begin
 
   if OpenDialog.Execute() then
   begin
-    for var ProjectInfo in FProjectList do
-    begin
-      if ProjectInfo.sPath = OpenDialog.FileName then
+    var ProjectInfo: TProjectInfo;
+    ProjectInfo.sPath := OpenDialog.FileName;
+
+    DeserializeProject(ProjectInfo);
+
+    if Assigned(OnOpenProject) then
         OnOpenProject(ProjectInfo);
-    end;
   end;
 end;
 
@@ -65,8 +68,9 @@ begin
   end;
 
   case ACol of
-    0: Value := FProjectList[ARow].sName;
-    1: Value := TPath.GetFullPath(FProjectList[ARow].sPath);
+    0: Value := TBitmap.CreateFromFile(FProjectList[ARow].ThumbnailPath);
+    1: Value := FProjectList[ARow].sName;
+    2: Value := TPath.GetFullPath(FProjectList[ARow].sPath);
   end;
 end;
 
@@ -81,7 +85,7 @@ end;
 
 procedure TOpenProjectFrame.RecentProjectsGridResize(Sender: TObject);
 begin
-  colProjectPaths.Width := RecentProjectsGrid.Width - colProjectNames.Width - 5;
+  colProjectPaths.Width := RecentProjectsGrid.Width - colThumbnails.Width - colProjectNames.Width - 6;
 end;
 
 end.

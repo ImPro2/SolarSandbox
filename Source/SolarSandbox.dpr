@@ -26,7 +26,8 @@ uses
   Neslib.System in '..\Dependencies\Neslib.Yaml\Neslib\Neslib.System.pas',
   Neslib.SysUtils in '..\Dependencies\Neslib.Yaml\Neslib\Neslib.SysUtils.pas',
   Neslib.Utf8 in '..\Dependencies\Neslib.Yaml\Neslib\Neslib.Utf8.pas',
-  ProjectTemplateItem in 'Project\ProjectTemplateItem.pas' {ProjectTemplateItemFrame: TFrame};
+  ProjectTemplateItem in 'Project\ProjectTemplateItem.pas' {ProjectTemplateItemFrame: TFrame},
+  WindowsFunctions in 'Game\WindowsFunctions.pas';
 
 {$R *.res}
 
