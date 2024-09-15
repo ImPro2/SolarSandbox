@@ -25,7 +25,8 @@ uses
   Neslib.Hash in '..\Dependencies\Neslib.Yaml\Neslib\Neslib.Hash.pas',
   Neslib.System in '..\Dependencies\Neslib.Yaml\Neslib\Neslib.System.pas',
   Neslib.SysUtils in '..\Dependencies\Neslib.Yaml\Neslib\Neslib.SysUtils.pas',
-  Neslib.Utf8 in '..\Dependencies\Neslib.Yaml\Neslib\Neslib.Utf8.pas';
+  Neslib.Utf8 in '..\Dependencies\Neslib.Yaml\Neslib\Neslib.Utf8.pas',
+  ProjectTemplateItem in 'Project\ProjectTemplateItem.pas' {ProjectTemplateItemFrame: TFrame};
 
 {$R *.res}
 
@@ -49,7 +50,7 @@ begin
   Logger.Providers.Add(GlobalLogFileProvider);
   with GlobalLogFileProvider do
   begin
-    FileName        := '.\Log.log';
+    FileName        := '.\Logs\Log.log';
     ShowHeaderInfo  := True;
     LogLevel        := LOG_VERBOSE;
     TimePrecission  := True;

@@ -1,51 +1,80 @@
 object NewProjectFrame: TNewProjectFrame
-  Size.Width = 320.000000000000000000
-  Size.Height = 240.000000000000000000
+  Align = Client
+  Size.Width = 527.000000000000000000
+  Size.Height = 448.000000000000000000
   Size.PlatformDefault = False
-  object lblNewProject: TLabel
-    Position.X = 24.000000000000000000
-    Position.Y = 24.000000000000000000
-    TextSettings.Trimming = None
-    Text = 'New Project'
-    TabOrder = 0
-  end
   object btnNewProject: TButton
-    Position.X = 24.000000000000000000
-    Position.Y = 192.000000000000000000
-    TabOrder = 1
-    Text = 'New Project'
+    Anchors = [akRight, akBottom]
+    StyledSettings = [FontColor]
+    Position.X = 420.000000000000000000
+    Position.Y = 416.000000000000000000
+    Size.Width = 99.000000000000000000
+    Size.Height = 24.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = 'Create'
+    TextSettings.Font.Family = 'Roboto'
+    TextSettings.Font.Size = 15.000000000000000000
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
     TextSettings.Trimming = None
     OnClick = OnNewProjectClick
   end
-  object edtProjectName: TEdit
-    Touch.InteractiveGestures = [LongTap, DoubleTap]
-    TabOrder = 2
-    Position.X = 192.000000000000000000
-    Position.Y = 97.000000000000000000
-  end
-  object btnPathSelector: TButton
-    Position.X = 252.000000000000000000
-    Position.Y = 136.000000000000000000
-    Size.Width = 40.000000000000000000
-    Size.Height = 22.000000000000000000
+  object pnlBottom: TPanel
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 511.000000000000000000
+    Size.Height = 400.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 3
-    Text = '...'
-    TextSettings.Trimming = None
-    OnClick = btnPathSelectorClick
-  end
-  object lblName: TLabel
-    Position.X = 48.000000000000000000
-    Position.Y = 104.000000000000000000
-    TextSettings.Trimming = None
-    Text = 'Project Name'
-    TabOrder = 4
-  end
-  object lblPath: TLabel
-    Position.X = 48.000000000000000000
-    Position.Y = 141.000000000000000000
-    TextSettings.Trimming = None
-    Text = 'Project Path'
-    TabOrder = 5
+    TabOrder = 1
+    object TemplatesGridPanel: TGridPanelLayout
+      Anchors = [akLeft, akTop, akRight]
+      Position.X = 8.000000000000000000
+      Position.Y = 33.000000000000000000
+      Size.Width = 495.000000000000000000
+      Size.Height = 232.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      ColumnCollection = <>
+      ControlCollection = <>
+      RowCollection = <>
+    end
+    object lblTemplate: TLabel
+      StyledSettings = [FontColor]
+      Position.X = 8.000000000000000000
+      Position.Y = 8.000000000000000000
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.Size = 18.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.Trimming = None
+      Text = 'Templates'
+      TabOrder = 1
+    end
+    object lblTemplateInfo: TLabel
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      StyledSettings = [FontColor]
+      Position.X = 8.000000000000000000
+      Position.Y = 298.000000000000000000
+      Size.Width = 495.000000000000000000
+      Size.Height = 94.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.Size = 13.000000000000000000
+      TextSettings.Font.StyleExt = {00040000000200000004000000}
+      TextSettings.VertAlign = Leading
+      TextSettings.Trimming = None
+      TabOrder = 2
+    end
+    object lblInfo: TLabel
+      StyledSettings = [FontColor]
+      Position.X = 8.000000000000000000
+      Position.Y = 273.000000000000000000
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.Size = 16.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.Trimming = None
+      Text = 'Info'
+      TabOrder = 3
+    end
   end
 end

@@ -10,7 +10,6 @@ type
     Mass: float32;
     Name: string;
     ID: uint64;
-    Notes: string;
 
     constructor Create(sName: string);
   end;

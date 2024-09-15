@@ -1,0 +1,43 @@
+object ProjectTemplateItemFrame: TProjectTemplateItemFrame
+  Align = Client
+  Size.Width = 223.000000000000000000
+  Size.Height = 220.000000000000000000
+  Size.PlatformDefault = False
+  object Button: TButton
+    Align = Client
+    Size.Width = 223.000000000000000000
+    Size.Height = 220.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    TextSettings.Trimming = None
+    OnClick = ButtonClick
+    OnDblClick = ButtonDblClick
+    object imgThumbnail: TImage
+      MultiResBitmap = <
+        item
+        end>
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      HitTest = False
+      Position.X = 8.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 207.000000000000000000
+      Size.Height = 181.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object lblCaption: TLabel
+      Anchors = [akLeft, akRight, akBottom]
+      StyledSettings = [FontColor]
+      Position.Y = 198.000000000000000000
+      Size.Width = 223.000000000000000000
+      Size.Height = 14.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.Size = 15.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.HorzAlign = Center
+      TextSettings.Trimming = None
+      Text = 'Caption'
+      TabOrder = 6
+    end
+  end
+end

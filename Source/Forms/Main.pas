@@ -18,6 +18,10 @@ type
     frmProjectSelector: TProjectSelectorFrame;
     frmGame: TGameFrame;
 
+    const
+      ProjectDirectory  = '.\Projects';
+      TemplateDirectory = '.\Templates';
+
     procedure OnStartGame(const ProjectInfo: TProjectInfo);
     procedure OnUpdate(fDeltaTime: float32); // in s
     procedure OnAppIdle(Sender: TObject; var Done: Boolean);
@@ -46,7 +50,7 @@ begin
   frmProjectSelector := TProjectSelectorFrame.Create(Self);
   frmProjectSelector.Parent := Self;
   frmProjectSelector.OnStartGame := Self.OnStartGame;
-  frmProjectSelector.Init;
+  frmProjectSelector.Init(ProjectDirectory, TemplateDirectory);
 
   frmGame := TGameFrame.Create(Self);
   frmGame.Parent := Self;
@@ -57,7 +61,14 @@ end;
 
 procedure TMainForm.OnStartGame(const ProjectInfo: TProjectInfo);
 begin
-  //Self.WindowState := TWindowState.wsMaximized;
+  if ProjectInfo.sPath.IsEmpty() then
+  begin
+    Self.Caption := 'SolarSandbox - Unsaved Project';
+  end else
+  begin
+    Self.Caption := 'SolarSandbox - ' + ProjectInfo.sPath;
+  end;
+
   frmProjectSelector.Visible := False;
   frmGame.Visible := True;
   frmGame.Init(ProjectInfo, False);

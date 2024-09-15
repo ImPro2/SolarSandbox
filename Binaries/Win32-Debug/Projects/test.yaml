@@ -1,0 +1,18 @@
+---
+Name: asdf
+Space Objects:
+- Name: Earth
+  ID: 1398622912
+  Mass: 100
+  PositionX: 0
+  PositionY: 0
+  VelocityX: 0
+  VelocityY: 0
+- Name: Moon
+  ID: 493501383
+  Mass: 10
+  PositionX: 0
+  PositionY: 10
+  VelocityX: 0
+  VelocityY: 0
+...

@@ -1,12 +1,89 @@
 object OpenProjectFrame: TOpenProjectFrame
-  Size.Width = 320.000000000000000000
-  Size.Height = 240.000000000000000000
+  Align = Client
+  Size.Width = 622.000000000000000000
+  Size.Height = 396.000000000000000000
   Size.PlatformDefault = False
-  object Label1: TLabel
-    Position.X = 168.000000000000000000
-    Position.Y = 160.000000000000000000
-    TextSettings.Trimming = None
-    Text = 'Open Project'
+  object RecentProjectsGrid: TGrid
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 8.000000000000000000
+    Position.Y = 73.000000000000000000
+    Size.Width = 606.000000000000000000
+    Size.Height = 310.000000000000000000
+    Size.PlatformDefault = False
     TabOrder = 0
+    RowCount = 10
+    Options = [AlternatingRowBackground, ColLines, RowLines, RowSelect, Header]
+    OnGetValue = RecentProjectsGridGetValue
+    OnResize = RecentProjectsGridResize
+    OnCellDblClick = RecentProjectsGridCellDblClick
+    Viewport.Width = 602.000000000000000000
+    Viewport.Height = 285.000000000000000000
+    object colProjectNames: TStringColumn
+      HorzAlign = Center
+      Header = 'Name'
+      HeaderSettings.TextSettings.Font.Family = 'Roboto'
+      HeaderSettings.TextSettings.Font.StyleExt = {00070000000000000004000000}
+      HeaderSettings.TextSettings.WordWrap = False
+      HeaderSettings.TextSettings.HorzAlign = Center
+      Size.Width = 145.000000000000000000
+    end
+    object colProjectPaths: TStringColumn
+      Header = 'Path'
+      HeaderSettings.TextSettings.Font.Family = 'Roboto'
+      HeaderSettings.TextSettings.Font.StyleExt = {00070000000000000004000000}
+      HeaderSettings.TextSettings.WordWrap = False
+      HeaderSettings.TextSettings.HorzAlign = Center
+      Opacity = 0.500000000000000000
+      Size.Width = 455.000000000000000000
+    end
+  end
+  object lblRecent: TLabel
+    StyledSettings = [Style, FontColor]
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 169.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Roboto'
+    TextSettings.Font.Size = 18.000000000000000000
+    TextSettings.Trimming = None
+    Text = 'Recent Projects'
+    TabOrder = 1
+  end
+  object edtSearch: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 2
+    Text = 'Search...'
+    Position.X = 38.000000000000000000
+    Position.Y = 43.000000000000000000
+    Size.Width = 576.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object btnSearch: TButton
+    HitTest = False
+    Position.X = 8.000000000000000000
+    Position.Y = 43.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    StyleLookup = 'searchtoolbutton'
+    TabOrder = 3
+    TextSettings.Trimming = None
+  end
+  object btnOpenProject: TButton
+    Anchors = [akTop, akRight]
+    Position.X = 508.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 106.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    Text = 'Open Project...'
+    TextSettings.Trimming = None
+    OnClick = btnOpenProjectClick
   end
 end

@@ -2,20 +2,27 @@ unit ProjectInfo;
 
 interface
 
-uses SpaceObject, Neslib.Yaml, System.SysUtils;
+uses SpaceObject, Neslib.Yaml, System.SysUtils, System.IOUtils, FMX.Graphics;
 
 type
   TProjectInfo = record
     sName: string;
     sPath: string;
     SpaceObjects: TSpaceObjectList;
+    Notes: string;
+    ThumbnailPath: string;
+    Thumbnail: TBitmap;
   end;
+
+  TProjectInfoList = array of TProjectInfo;
 
   TNewProjectEvent  = procedure(Info: TProjectInfo) of object;
   TOpenProjectEvent = procedure(Info: TProjectInfo) of object;
 
   procedure SerializeProject(ProjectInfo: TProjectInfo);
   procedure DeserializeProject(var ProjectInfo: TProjectInfo);
+
+  function LoadProjectsFromDirectory(Path: string): TProjectInfoList;
 
 implementation
 
@@ -24,6 +31,7 @@ begin
   var Doc: IYamlDocument := TYamlDocument.CreateMapping();
 
   Doc.Root.AddOrSetValue('Name', ProjectInfo.sName);
+  Doc.Root.AddOrSetValue('Notes', ProjectInfo.Notes);
 
   var SpaceObjectSequence: TYamlNode := Doc.Root.AddOrSetSequence('Space Objects');
   for var SpaceObject in ProjectInfo.SpaceObjects do
@@ -47,6 +55,7 @@ begin
   var Doc: IYamlDocument := TYamlDocument.Load(ProjectInfo.sPath);
 
   ProjectInfo.sName := Doc.Root.Values['Name'];
+  ProjectInfo.Notes := Doc.Root.Values['Notes'];
 
   var SpaceObjectsMapping: TYamlNode := Doc.Root.Values['Space Objects'];
 
@@ -67,6 +76,31 @@ begin
 
     ProjectInfo.SpaceObjects[i] := SpaceObject;
   end;
+end;
+
+function LoadProjectsFromDirectory(Path: string): TProjectInfoList;
+begin
+  var ProjectList: TProjectinfoList;
+
+  var FilePaths: TArray<string> := TDirectory.GetFiles(Path);
+
+  for var FilePath in FilePaths do
+  begin
+    var FullPath:  string := TPath.GetFullPath(FilePath);
+    var Extension: string := TPath.GetExtension(FullPath);
+
+    if  Extension = '.yaml' then
+    begin
+      var ProjectInfo: TProjectInfo;
+      ProjectInfo.sPath := FullPath;
+
+      DeserializeProject(ProjectInfo);
+
+      ProjectList := ProjectList + [ProjectInfo];
+    end;
+  end;
+
+  Result := ProjectList;
 end;
 
 end.

@@ -183,6 +183,11 @@
         <DCCReference Include="..\Dependencies\Neslib.Yaml\Neslib\Neslib.System.pas"/>
         <DCCReference Include="..\Dependencies\Neslib.Yaml\Neslib\Neslib.SysUtils.pas"/>
         <DCCReference Include="..\Dependencies\Neslib.Yaml\Neslib\Neslib.Utf8.pas"/>
+        <DCCReference Include="Project\ProjectTemplateItem.pas">
+            <Form>ProjectTemplateItemFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

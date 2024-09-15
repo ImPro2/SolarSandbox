@@ -10,7 +10,7 @@ object ProjectSelectorFrame: TProjectSelectorFrame
     Size.PlatformDefault = False
     TabIndex = 0
     TabOrder = 0
-    TabPosition = PlatformDefault
+    TabPosition = Top
     Sizes = (
       510s
       282s

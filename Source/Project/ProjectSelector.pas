@@ -24,22 +24,24 @@ type
   public
     OnStartGame: TStartGameEvent;
 
-    procedure Init();
+    procedure Init(ProjectDirectory: string; TemplateDirectory: string);
   end;
 
 implementation
 
 {$R *.fmx}
 
-procedure TProjectSelectorFrame.Init();
+procedure TProjectSelectorFrame.Init(ProjectDirectory: string; TemplateDirectory: string);
 begin
   frmOpenProject := TOpenProjectFrame.Create(Self);
   frmOpenProject.Parent := tiOpenProject;
   frmOpenProject.OnOpenProject := Self.OnOpenProject;
+  frmOpenProject.Init(ProjectDirectory);
 
   frmNewProject := TNewProjectFrame.Create(Self);
   frmNewProject.Parent := tiNewProject;
   frmNewProject.OnNewProject := Self.OnNewProject;
+  frmNewProject.Init(TemplateDirectory);
 end;
 
 procedure TProjectSelectorFrame.OnNewProject(Info: TProjectInfo);
@@ -50,6 +52,8 @@ end;
 
 procedure TProjectSelectorFrame.OnOpenProject(Info: TProjectInfo);
 begin
+  if Assigned(OnStartGame) then
+    OnStartGame(Info);
 end;
 
 end.
