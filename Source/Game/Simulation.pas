@@ -12,12 +12,15 @@ uses
 type
   TPositionDictionary = TDictionary<uint32, TRectF>;
 
+  TSpaceObjectSelectedEvent = procedure(ID: uint32) of object;
+
   TSimulationFrame = class(TFrame)
     Image: TImage;
     //procedure PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
     procedure FrameResize(Sender: TObject);
     procedure FrameMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; var Handled: Boolean);
     procedure FrameMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
+    procedure FrameMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure ImagePaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
 
   public
@@ -43,9 +46,13 @@ type
     FPositionDictionary: TPositionDictionary;
 
   public
+    OnSpaceObjectSelected: TSpaceObjectSelectedEvent;
     property Simulate: boolean read FSimulate write FSimulate;
 
   private
+    function ScreenCoordsToNDC(ScreenX: float32; ScreenY: float32): TVector3D;
+    function NDCToWorldSpace(NDC: TVector3D): TVector3D;
+
     procedure RecalculateViewProjectionMatrix();
     procedure UpdateCameraMovement(fDeltaTime: float32);
     procedure UpdateSpaceBodies(fDeltaTime: float32);
@@ -62,6 +69,7 @@ begin
   Self.OnResize      := Self.FrameResize;
   Image.OnMouseMove  := Self.FrameMouseMove;
   Image.OnMouseWheel := Self.FrameMouseWheel;
+  Image.OnMouseDown  := Self.FrameMouseDown;
 
   FSimulate := False;
 
@@ -213,7 +221,8 @@ begin
 
   if (bRightMouseButton) then
   begin
-    var WorldSpaceDelta: TVector3D := FMouseDeltaNDC * FProjectionInverseMatrix;
+    //var WorldSpaceDelta: TVector3D := FMouseDeltaNDC * FProjectionInverseMatrix;
+    var WorldSpaceDelta: TVector3D := NDCToWorldSpace(FMouseDeltaNDC);
 
     FCameraPosition.X := FCameraPosition.X - WorldSpaceDelta.X;
     FCameraPosition.Y := FCameraPosition.Y - WorldSpaceDelta.Y;
@@ -250,11 +259,7 @@ begin
   var MouseDeltaX := X - FLastMouseX;
   var MouseDeltaY := Y - FLastMouseY;
 
-  FMouseDeltaNDC := TVector3D.Create(
-     (2.0 * MouseDeltaX) / Width  - 0.0,
-    -(2.0 * MouseDeltaY) / Height + 0.0,
-    0.0
-  );
+  FMouseDeltaNDC := ScreenCoordsToNDC(MouseDeltaX, MouseDeltaY);
 
   FLastMouseX := X;
   FLastMouseY := Y;
@@ -275,6 +280,46 @@ begin
   FCameraZoomLevel := Max(FCameraZoomLevel, 0.25);
 
   RecalculateViewProjectionMatrix();
+end;
+
+procedure TSimulationFrame.FrameMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+begin
+  if Button <> TMouseButton.mbLeft then
+    Exit;
+
+  for var Pair: TPair<uint32, TRectF> in FPositionDictionary.ToArray() do
+  begin
+    var ID: uint32 := Pair.Key;
+    var NDCRect: TRectF := Pair.Value;
+
+    var Radius:     float32 := 0.5 * (NDCRect.Right - NDCRect.Left);
+
+    var dx: float32 := NDCRect.CenterPoint.X - X;
+    var dy: float32 := NDCRect.CenterPoint.Y - Y;
+
+    var DistanceSq: float32 := dx * dx + dy * dy;
+    var RadiusSq:   float32 := Radius * Radius;
+
+    if DistanceSq <= RadiusSq then
+    begin
+      if Assigned(OnSpaceObjectSelected) then
+        OnSpaceObjectSelected(ID);
+    end;
+  end;
+end;
+
+function TSimulationFrame.ScreenCoordsToNDC(ScreenX: float32; ScreenY: float32): TVector3D;
+begin
+  Result := TVector3D.Create(
+     (2.0 * ScreenX) / Width  - 0.0,
+    -(2.0 * ScreenY) / Height + 0.0,
+    0.0
+  );
+end;
+
+function TSimulationFrame.NDCToWorldSpace(NDC: TVector3D): TVector3D;
+begin
+  Result := NDC * FProjectionInverseMatrix;
 end;
 
 procedure TSimulationFrame.ImagePaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);

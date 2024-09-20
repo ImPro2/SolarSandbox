@@ -58,6 +58,7 @@ type
     procedure OnGameStop();
     procedure OnGamePause();
     procedure OnGameResume();
+    procedure OnSimulationSpaceObjectSelected(ID: uint32);
 
   public
     procedure Init(const ProjectInfo: TProjectInfo; NewProject: Boolean);
@@ -100,6 +101,7 @@ begin
   FSimulationFrame           := TSimulationFrame.Create(Self);
   FSimulationFrame.Parent    := pnlSimulation;
   FSimulationFrame.Visible   := False;
+  FSimulationFrame.OnSpaceObjectSelected := Self.OnSimulationSpaceObjectSelected;
 end;
 
 procedure TGameFrame.Init(const ProjectInfo: TProjectInfo; NewProject: Boolean);
@@ -161,6 +163,11 @@ procedure TGameFrame.OnGameResume();
 begin
   Logger.Info('Game Resume');
   FSimulationFrame.Simulate := True;
+end;
+
+procedure TGameFrame.OnSimulationSpaceObjectSelected(ID: uint32);
+begin
+  FSceneFrame.SelectedSpaceObjectID := ID;
 end;
 
 procedure TGameFrame.SaveProject();
