@@ -1,0 +1,3 @@
+[submodule "Dependencies/Neslib.Yaml"]
+	path = Dependencies/Neslib.Yaml
+	url = https://github.com/neslib/Neslib.Yaml
