@@ -14,13 +14,14 @@ type
   TGameResumeEvent = procedure() of object;
 
   TPlayBarFrame = class(TFrame)
-    pnlCenter: TPanel;
+    pnlLeft: TPanel;
     pnlPlayStop: TPanel;
     pnlPauseResume: TPanel;
     imgPlay: TImage;
     imgStop: TImage;
     imgPause: TImage;
     imgResume: TImage;
+    pnlRight: TPanel;
     procedure pnlPlayStopClick(Sender: TObject);
     procedure pnlPauseResumeClick(Sender: TObject);
 

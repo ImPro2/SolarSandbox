@@ -11,6 +11,7 @@ uses
 
 type
   TPositionDictionary = TDictionary<uint32, TRectF>;
+  TGridLines = array of TPair<TPointF, TPointF>;
 
   TSpaceObjectSelectedEvent = procedure(ID: uint32) of object;
 
@@ -34,7 +35,7 @@ type
     FMouseDeltaNDC: TVector3D;
     FSimulate: boolean;
 
-    FViewMatrix, FProjectionMatrix, FProjectionInverseMatrix: TMatrix3D;
+    FViewMatrix, FProjectionMatrix, FViewInverseMatrix, FProjectionInverseMatrix: TMatrix3D;
     FViewProjectionMatrix: TMatrix3D;
 
     FCameraPosition: TVector3D;
@@ -43,23 +44,31 @@ type
 
     FAspectRatio: float32;
 
-    FPositionDictionary: TPositionDictionary;
+    FFocusedSpaceObjectID: uint32;
 
+    FPositionDictionary: TPositionDictionary;
+    FGridLines: TGridLines;
   public
     OnSpaceObjectSelected: TSpaceObjectSelectedEvent;
-    property Simulate: boolean read FSimulate write FSimulate;
 
   private
+    function NDCToScreenCoords(NDC: TVector3D): TPointF;
     function ScreenCoordsToNDC(ScreenX: float32; ScreenY: float32): TVector3D;
     function NDCToWorldSpace(NDC: TVector3D): TVector3D;
 
+    procedure FocusSpaceObject(ID: uint32);
     procedure RecalculateViewProjectionMatrix();
+    procedure RecalculateGrid();
+
     procedure UpdateCameraMovement(fDeltaTime: float32);
     procedure UpdateSpaceBodies(fDeltaTime: float32);
     procedure UpdateSpaceBodyPosition(fDeltaTime: float32; i: int32);
     procedure UpdateSpaceBodyRendering(i: int32);
 
     procedure PaintToCanvas(Canvas: TCanvas);
+  public
+    property Simulate: boolean read FSimulate write FSimulate;
+    property FocusedSpaceObjectID: uint32 read FFocusedSpaceObjectID write FocusSpaceObject;
   end;
 
 implementation
@@ -81,15 +90,43 @@ begin
 
   RecalculateViewProjectionMatrix();
 
+  FFocusedSpaceObjectID := 0;
+
   FPositionDictionary := TPositionDictionary.Create();
 end;
 
+{$Region Update functions}
+
 procedure TSimulationFrame.OnUpdate(fDeltaTime: float32);
 begin
+  RecalculateGrid();
   UpdateCameraMovement(fDeltaTime);
   UpdateSpaceBodies(fDeltaTime);
 
   Repaint();
+end;
+
+procedure TSimulationFrame.UpdateCameraMovement(fDeltaTime: float32);
+begin
+  if FPositionDictionary.ContainsKey(FFocusedSpaceObjectID) then
+  begin
+    var SpaceObject: TSpaceObject := SpaceObjectFromID(FFocusedSpaceObjectID);
+    FCameraPosition.X := SpaceObject.PositionX;
+    FCameraPosition.Y := SpaceObject.PositionY;
+    RecalculateViewProjectionMatrix();
+  end;
+
+  if IsRightMouseButtonDown() then
+  begin
+    var WorldSpaceDelta: TVector3D := NDCToWorldSpace(FMouseDeltaNDC);
+
+    FCameraPosition.X := FCameraPosition.X - WorldSpaceDelta.X;
+    FCameraPosition.Y := FCameraPosition.Y - WorldSpaceDelta.Y;
+
+    RecalculateViewProjectionMatrix();
+  end;
+
+  FMouseDeltaNDC := TVector3D.Zero;
 end;
 
 procedure TSimulationFrame.UpdateSpaceBodies(fDeltaTime: float32);
@@ -175,7 +212,7 @@ begin
 
   // Convert to Screen Space Coordinates
 
-  var ScreenTopLeft: TPointF := TPointF.Create(
+  {var ScreenTopLeft: TPointF := TPointF.Create(
     (NDCTopLeft.X + 1.0) * 0.5 * Width,
     (1.0 - NDCTopLeft.Y) * 0.5 * Height
   );
@@ -183,7 +220,9 @@ begin
   var ScreenBtmRight: TPointF := TPointF.Create(
     (NDCBtmRight.X + 1.0) * 0.5 * Width,
     (1.0 - NDCBtmRight.Y) * 0.5 * Height
-  );
+  );}
+  var ScreenTopLeft:  TPointF := NDCToScreenCoords(NDCTopLeft);
+  var ScreenBtmRight: TPointF := NDCToScreenCoords(NDCBtmRight);
 
   FPositionDictionary[GSpaceObjects[i].ID] := TRectF.Create(
     TPointF.Create(ScreenTopLeft.X,  ScreenTopLeft.Y),
@@ -191,12 +230,19 @@ begin
   );
 end;
 
+{$EndRegion}
+
 procedure TSimulationFrame.GenerateThumbnail(Path: string);
 begin
   var Bitmap: TBitmap := TBitmap.Create(Round(Width), Round(Height));
   PaintToCanvas(Bitmap.Canvas);
 
   Bitmap.SaveToFile(Path);
+end;
+
+procedure TSimulationFrame.FocusSpaceObject(ID: uint32);
+begin
+  FFocusedSpaceObjectID := ID;
 end;
 
 procedure TSimulationFrame.RecalculateViewProjectionMatrix();
@@ -212,25 +258,62 @@ begin
   FViewMatrix       := TMatrix3D.CreateTranslation(FCameraPosition).Inverse();
 
   FViewProjectionMatrix := FViewMatrix * FProjectionMatrix;
+  FViewInverseMatrix := FViewMatrix.Inverse();
   FProjectionInverseMatrix := FProjectionMatrix.Inverse();
 end;
 
-procedure TSimulationFrame.UpdateCameraMovement(fDeltaTime: float32);
+procedure TSimulationFrame.RecalculateGrid();
+const CMaxHorzGridLines = 5;
 begin
-  var bRightMouseButton := IsRightMouseButtonDown();
+  SetLength(FGridLines, 0);
 
-  if (bRightMouseButton) then
+  var BtmLeftWorld:  TVector3D := TVector3D.Create(-1.0, -1.0, 0.0) * FProjectionInverseMatrix * FViewInverseMatrix;
+  var TopRightWorld: TVector3D := TVector3D.Create( 1.0,  1.0, 0.0) * FProjectionInverseMatrix * FViewInverseMatrix;
+
+  var WorldBounds: TRectF := TRectF.Create(
+    TPointF.Create(BtmLeftWorld.X,  TopRightWorld.Y),
+    TPointF.Create(TopRightWorld.X, BtmLeftWorld.Y)
+  );
+
+  var WidthRounded: int32 := Floor(WorldBounds.Width);
+  var NearestPlaceholder: int32 := Floor(Power(10, Floor(Log10(WidthRounded))));
+
+  var Increment: int32 := Ceil(NearestPlaceholder / CMaxHorzGridLines);
+
+  var X: float32 := Increment * Floor(WorldBounds.Left   / Increment);
+  var Y: float32 := Increment * Floor(WorldBounds.Bottom / Increment);
+
+  while X <= WorldBounds.Right do
   begin
-    //var WorldSpaceDelta: TVector3D := FMouseDeltaNDC * FProjectionInverseMatrix;
-    var WorldSpaceDelta: TVector3D := NDCToWorldSpace(FMouseDeltaNDC);
+    var LineTopNDC: TVector3D := TVector3D.Create(X, WorldBounds.Top, 0.0)    * FViewProjectionMatrix;
+    var LineBtmNDC: TVector3D := TVector3D.Create(X, WorldBounds.Bottom, 0.0) * FViewProjectionMatrix;
 
-    FCameraPosition.X := FCameraPosition.X - WorldSpaceDelta.X;
-    FCameraPosition.Y := FCameraPosition.Y - WorldSpaceDelta.Y;
+    var LineTopScreen: TPointF := NDCToScreenCoords(LineTopNDC);
+    var LineBtmScreen: TPointF := NDCToScreenCoords(LineBtmNDC);
 
-    RecalculateViewProjectionMatrix();
+    FGridLines := FGridLines + [
+      TPair<TPointF, TPointF>.Create(LineTopScreen, LineBtmScreen)
+    ];
+
+    X := X + Increment;
   end;
 
-  FMouseDeltaNDC := TVector3D.Zero;
+  while Y <= WorldBounds.Top do
+  begin
+    var LineLeftNDC:  TVector3D := TVector3D.Create(WorldBounds.Left,  Y, 0.0) * FViewProjectionMatrix;
+    var LineRightNDC: TVector3D := TVector3D.Create(WorldBounds.Right, Y, 0.0) * FViewProjectionMatrix;
+
+    var LineLeftScreen:  TPointF := NDCToScreenCoords(LineLeftNDC);
+    var LineRightScreen: TPointF := NDCToScreenCoords(LineRightNDC);
+
+    FGridLines := FGridLines + [
+      TPair<TPointF, TPointF>.Create(LineLeftScreen, LineRightScreen)
+    ];
+
+    Y := Y + Increment;
+  end;
+
+
 end;
 
 procedure TSimulationFrame.PaintToCanvas(Canvas: TCanvas);
@@ -242,6 +325,13 @@ begin
 
   Canvas.IntersectClipRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)));
   Canvas.ClearRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)), TAlphaColors.Black);
+
+  // Draw grid
+
+  for var GridLine: TPair<TPointF, TPointF> in FGridLines do
+  begin
+    Canvas.DrawLine(GridLine.Key, GridLine.Value, 1.0, TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.Dimgray));
+  end;
 
   // Draw space objects
 
@@ -302,10 +392,19 @@ begin
 
     if DistanceSq <= RadiusSq then
     begin
+      FocusedSpaceObjectID := ID;
       if Assigned(OnSpaceObjectSelected) then
         OnSpaceObjectSelected(ID);
     end;
   end;
+end;
+
+function TSimulationFrame.NDCToScreenCoords(NDC: TVector3D): TPointF;
+begin
+  Result := TPointF.Create(
+    (NDC.X + 1.0) * 0.5 * Width,
+    (1.0 - NDC.Y) * 0.5 * Height
+  );
 end;
 
 function TSimulationFrame.ScreenCoordsToNDC(ScreenX: float32; ScreenY: float32): TVector3D;

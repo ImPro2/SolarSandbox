@@ -1,11 +1,12 @@
 object PlayBarFrame: TPlayBarFrame
   Align = Client
-  Size.Width = 427.000000000000000000
+  Size.Width = 254.000000000000000000
   Size.Height = 26.000000000000000000
   Size.PlatformDefault = False
-  object pnlCenter: TPanel
-    Align = HorzCenter
-    Position.X = 187.000000000000000000
+  object pnlLeft: TPanel
+    Align = Left
+    Margins.Left = 13.000000000000000000
+    Position.X = 13.000000000000000000
     Size.Width = 52.000000000000000000
     Size.Height = 26.000000000000000000
     Size.PlatformDefault = False
@@ -2764,5 +2765,13 @@ object PlayBarFrame: TPlayBarFrame
         Visible = False
       end
     end
+  end
+  object pnlRight: TPanel
+    Anchors = [akLeft, akTop, akRight]
+    Position.X = 78.000000000000000000
+    Size.Width = 176.000000000000000000
+    Size.Height = 26.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
   end
 end
