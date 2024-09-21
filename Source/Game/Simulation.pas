@@ -3,7 +3,7 @@ unit Simulation;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, System.Generics.Collections,
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, System.Generics.Collections, System.Generics.Defaults,
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls, Math,
   FMX.Controls.Presentation, FMX.Objects, System.Math.Vectors, FMX.Canvas.D2D,
   Quick.Console, Quick.Logger,
@@ -44,6 +44,8 @@ type
 
     FAspectRatio: float32;
 
+    FOrbitTrajectoryPathData: TPathData;
+
     FFocusedSpaceObjectID: uint32;
     FPlaybackSpeed: float32;
 
@@ -59,6 +61,7 @@ type
 
     procedure RecalculateViewProjectionMatrix();
     procedure RecalculateGrid();
+    procedure RecalculateOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32; AttractorID: uint32);
 
     procedure UpdateCameraMovement(fDeltaTime: float32);
     procedure UpdateSpaceBodies(fDeltaTime: float32);
@@ -106,6 +109,9 @@ begin
   UpdateCameraMovement(fDeltaTime);
   UpdateSpaceBodies(fDeltaTime);
 
+  // Temporary
+  RecalculateOrbitTrajectory(fDeltaTime, GSpaceObjects[1].ID, GSpaceObjects[0].ID);
+
   Repaint();
 end;
 
@@ -139,7 +145,9 @@ begin
   for var i: int32 := 0 to Length(GSpaceObjects) - 1 do
   begin
     if FSimulate then
+    begin
       UpdateSpaceBodyPosition(fDeltaTime, i);
+    end;
 
     UpdateSpaceBodyRendering(i);
   end;
@@ -314,6 +322,72 @@ begin
   end;
 end;
 
+procedure TSimulationFrame.RecalculateOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32; AttractorID: uint32);
+const StepCount = 2000;
+begin
+  FOrbitTrajectoryPathData := TPathData.Create();
+
+  // TODO: Find attractor ID for every space object :(
+  var SpaceObject: TSpaceObject := SpaceObjectFromID(SpaceObjectID);
+  var Attractor:   TSpaceObject := SpaceObjectFromID(AttractorID);
+
+  var G: float32 := 1.0;
+
+  var PositionX: float32 := SpaceObject.PositionX;
+  var PositionY: float32 := SpaceObject.PositionY;
+  var VelocityX: float32 := SpaceObject.VelocityX;
+  var VelocityY: float32 := SpaceObject.VelocityY;
+
+  var AttractorPositionX: float32 := Attractor.PositionX;
+  var AttractorPositionY: float32 := Attractor.PositionY;
+  var AttractorVelocityX: float32 := Attractor.VelocityX;
+  var AttractorVelocityY: float32 := Attractor.VelocityY;
+
+  for var i: int32 := 1 to StepCount do
+  begin
+    // Calculate gravitational force
+
+    var dx: float32 := AttractorPositionX - PositionX;
+    var dy: float32 := AttractorPositionY - PositionY;
+
+    var DistanceSquared := dx * dx + dy * dy;
+
+    var Force: float32 := G * SpaceObject.Mass * Attractor.Mass / DistanceSquared;
+    var Angle: float32 := ArcTan2(dy, dx);
+
+    var ForceX: float32 := Force * Cos(Angle);
+    var ForceY: float32 := Force * Sin(Angle);
+
+    // Calculate world position
+
+    var AccelerationX: float32 := ForceX / SpaceObject.Mass;
+    var AccelerationY: float32 := ForceY / SpaceObject.Mass;
+
+    VelocityX := VelocityX + AccelerationX * fDeltaTime;
+    VelocityY := VelocityY + AccelerationY * fDeltaTime;
+
+    PositionX := PositionX + VelocityX * fDeltaTime;
+    PositionY := PositionY + VelocityY * fDeltaTime;
+
+    var AttractorAccelerationX: float32 := -ForceX / Attractor.Mass;
+    var AttractorAccelerationY: float32 := -ForceY / Attractor.Mass;
+
+    AttractorVelocityX := AttractorVelocityX + AttractorAccelerationX * fDeltaTime;
+    AttractorVelocityY := AttractorVelocityY + AttractorAccelerationY * fDeltaTime;
+
+    AttractorPositionX := AttractorPositionX + AttractorVelocityX * fDeltaTime;
+    AttractorPositionY := AttractorPositionY + AttractorVelocityY * fDeltaTime;
+
+    // Calculate screen coords
+
+    var NDC: TVector3D := TVector3D.Create(PositionX, PositionY, 0.0) * FViewProjectionMatrix;
+    var ScreenCoords: TPointF := NDCToScreenCoords(NDC);
+    FOrbitTrajectoryPathData.LineTo(ScreenCoords);
+    FOrbitTrajectoryPathData.MoveTo(ScreenCoords);
+  end;
+  FOrbitTrajectoryPathData.ClosePath();
+end;
+
 procedure TSimulationFrame.PaintToCanvas(Canvas: TCanvas);
 begin
   if FPositionDictionary.IsEmpty then
@@ -330,6 +404,10 @@ begin
   begin
     Canvas.DrawLine(GridLine.Key, GridLine.Value, 1.0, TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.Dimgray));
   end;
+
+  // Draw orbiral trajectory
+
+  Canvas.DrawPath(FOrbitTrajectoryPathData, 1.0, TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.Blue));
 
   // Draw space objects
 
