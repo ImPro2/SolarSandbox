@@ -1,13 +1,13 @@
 object PlayBarFrame: TPlayBarFrame
   Align = Client
-  Size.Width = 254.000000000000000000
+  Size.Width = 706.000000000000000000
   Size.Height = 26.000000000000000000
   Size.PlatformDefault = False
   object pnlLeft: TPanel
     Align = Left
     Margins.Left = 13.000000000000000000
     Position.X = 13.000000000000000000
-    Size.Width = 52.000000000000000000
+    Size.Width = 196.000000000000000000
     Size.Height = 26.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
@@ -1763,7 +1763,7 @@ object PlayBarFrame: TPlayBarFrame
       end
     end
     object pnlPauseResume: TPanel
-      Align = FitRight
+      Align = FitLeft
       Position.X = 26.000000000000000000
       Size.Width = 26.000000000000000000
       Size.Height = 26.000000000000000000
@@ -2765,11 +2765,38 @@ object PlayBarFrame: TPlayBarFrame
         Visible = False
       end
     end
+    object nbPlaybackSpeed: TNumberBox
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 2
+      Cursor = crSizeWE
+      Min = -100.000000000000000000
+      Value = 1.000000000000000000
+      ValueType = Float
+      KeyboardType = NumbersAndPunctuation
+      Position.X = 112.000000000000000000
+      Position.Y = 2.000000000000000000
+      HorzIncrement = 0.010000000000000000
+      VertIncrement = 1.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 84.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      OnChange = nbPlaybackSpeedChange
+    end
+    object lblPlaybackSpeed: TLabel
+      Position.X = 65.000000000000000000
+      Size.Width = 70.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Speed:'
+      TabOrder = 4
+    end
   end
   object pnlRight: TPanel
     Anchors = [akLeft, akTop, akRight]
-    Position.X = 78.000000000000000000
-    Size.Width = 176.000000000000000000
+    Position.X = 240.000000000000000000
+    Size.Width = 466.000000000000000000
     Size.Height = 26.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1

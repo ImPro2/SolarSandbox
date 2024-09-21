@@ -58,6 +58,7 @@ type
     procedure OnGameStop();
     procedure OnGamePause();
     procedure OnGameResume();
+    procedure OnPlaybackSpeedChange(PlaybackSpeed: float32);
     procedure OnSimulationSpaceObjectSelected(ID: uint32);
 
   public
@@ -96,6 +97,7 @@ begin
   FPlayBarFrame.OnGameStop   := Self.OnGameStop;
   FPlayBarFrame.OnGamePause  := Self.OnGamePause;
   FPlayBarFrame.OnGameResume := Self.OnGameResume;
+  FPlayBarFrame.OnPlaybackSpeedChange := Self.OnPlaybackSpeedChange;
   FPlayBarFrame.Visible      := False;
 
   FSimulationFrame           := TSimulationFrame.Create(Self);
@@ -163,6 +165,11 @@ procedure TGameFrame.OnGameResume();
 begin
   Logger.Info('Game Resume');
   FSimulationFrame.Simulate := True;
+end;
+
+procedure TGameFrame.OnPlaybackSpeedChange(PlaybackSpeed: float32);
+begin
+  FSimulationFrame.PlaybackSpeed := PlaybackSpeed;
 end;
 
 procedure TGameFrame.OnSimulationSpaceObjectSelected(ID: uint32);

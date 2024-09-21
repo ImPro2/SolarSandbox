@@ -139,7 +139,7 @@ object PropertiesFrame: TPropertiesFrame
         ValueType = Float
         KeyboardType = NumbersAndPunctuation
         Position.X = 22.000000000000000000
-        HorzIncrement = 0.100000000000000000
+        HorzIncrement = 0.010000000000000000
         Size.Width = 59.000000000000000000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False

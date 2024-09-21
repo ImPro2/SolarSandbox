@@ -5,13 +5,16 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, 
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Controls.Presentation, FMX.Objects, FMX.Colors;
+  FMX.Controls.Presentation, FMX.Objects, FMX.Colors, FMX.Edit, FMX.EditBox,
+  FMX.NumberBox;
 
 type
   TGameStartEvent  = procedure() of object;
   TGameStopEvent   = procedure() of object;
   TGamePauseEvent  = procedure() of object;
   TGameResumeEvent = procedure() of object;
+
+  TPlaybackSpeedChangedEvent = procedure(PlaybackSpeed: float32) of object;
 
   TPlayBarFrame = class(TFrame)
     pnlLeft: TPanel;
@@ -22,14 +25,19 @@ type
     imgPause: TImage;
     imgResume: TImage;
     pnlRight: TPanel;
+    nbPlaybackSpeed: TNumberBox;
+    lblPlaybackSpeed: TLabel;
     procedure pnlPlayStopClick(Sender: TObject);
     procedure pnlPauseResumeClick(Sender: TObject);
+    procedure nbPlaybackSpeedChange(Sender: TObject);
 
   public
     OnGameStart:  TGameStartEvent;
     OnGameStop:   TGameStopEvent;
     OnGamePause:  TGamePauseEvent;
     OnGameResume: TGameResumeEvent;
+
+    OnPlaybackSpeedChange: TPlaybackSpeedChangedEvent;
 
     procedure Init();
 
@@ -73,6 +81,12 @@ begin
     if Assigned(OnGameStop) then
       OnGameStop();
   end;
+end;
+
+procedure TPlayBarFrame.nbPlaybackSpeedChange(Sender: TObject);
+begin
+  if Assigned(OnPlaybackSpeedChange) then
+    OnPlaybackSpeedChange(nbPlaybackSpeed.Value);
 end;
 
 procedure TPlayBarFrame.pnlPauseResumeClick(Sender: TObject);

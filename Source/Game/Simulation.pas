@@ -45,6 +45,7 @@ type
     FAspectRatio: float32;
 
     FFocusedSpaceObjectID: uint32;
+    FPlaybackSpeed: float32;
 
     FPositionDictionary: TPositionDictionary;
     FGridLines: TGridLines;
@@ -56,7 +57,6 @@ type
     function ScreenCoordsToNDC(ScreenX: float32; ScreenY: float32): TVector3D;
     function NDCToWorldSpace(NDC: TVector3D): TVector3D;
 
-    procedure FocusSpaceObject(ID: uint32);
     procedure RecalculateViewProjectionMatrix();
     procedure RecalculateGrid();
 
@@ -68,7 +68,8 @@ type
     procedure PaintToCanvas(Canvas: TCanvas);
   public
     property Simulate: boolean read FSimulate write FSimulate;
-    property FocusedSpaceObjectID: uint32 read FFocusedSpaceObjectID write FocusSpaceObject;
+    property FocusedSpaceObjectID: uint32 read FFocusedSpaceObjectID write FFocusedSpaceObjectID;
+    property PlaybackSpeed: float32 read FPlaybackSpeed write FPlaybackSpeed;
   end;
 
 implementation
@@ -91,6 +92,7 @@ begin
   RecalculateViewProjectionMatrix();
 
   FFocusedSpaceObjectID := 0;
+  FPlaybackSpeed := 1.0;
 
   FPositionDictionary := TPositionDictionary.Create();
 end;
@@ -99,7 +101,8 @@ end;
 
 procedure TSimulationFrame.OnUpdate(fDeltaTime: float32);
 begin
-  RecalculateGrid();
+  fDeltaTime := fDeltaTime * FPlaybackSpeed;
+
   UpdateCameraMovement(fDeltaTime);
   UpdateSpaceBodies(fDeltaTime);
 
@@ -114,6 +117,7 @@ begin
     FCameraPosition.X := SpaceObject.PositionX;
     FCameraPosition.Y := SpaceObject.PositionY;
     RecalculateViewProjectionMatrix();
+    RecalculateGrid();
   end;
 
   if IsRightMouseButtonDown() then
@@ -124,6 +128,7 @@ begin
     FCameraPosition.Y := FCameraPosition.Y - WorldSpaceDelta.Y;
 
     RecalculateViewProjectionMatrix();
+    RecalculateGrid();
   end;
 
   FMouseDeltaNDC := TVector3D.Zero;
@@ -240,11 +245,6 @@ begin
   Bitmap.SaveToFile(Path);
 end;
 
-procedure TSimulationFrame.FocusSpaceObject(ID: uint32);
-begin
-  FFocusedSpaceObjectID := ID;
-end;
-
 procedure TSimulationFrame.RecalculateViewProjectionMatrix();
 var
   Left, Right, Top, Bottom: float32;
@@ -312,8 +312,6 @@ begin
 
     Y := Y + Increment;
   end;
-
-
 end;
 
 procedure TSimulationFrame.PaintToCanvas(Canvas: TCanvas);
@@ -360,6 +358,7 @@ begin
   FAspectRatio := float32(Width) / float32(Height);
 
   RecalculateViewProjectionMatrix();
+  RecalculateGrid();
 end;
 
 procedure TSimulationFrame.FrameMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; var Handled: Boolean);
@@ -370,6 +369,7 @@ begin
   FCameraZoomLevel := Max(FCameraZoomLevel, 0.25);
 
   RecalculateViewProjectionMatrix();
+  RecalculateGrid();
 end;
 
 procedure TSimulationFrame.FrameMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
@@ -392,7 +392,6 @@ begin
 
     if DistanceSq <= RadiusSq then
     begin
-      FocusedSpaceObjectID := ID;
       if Assigned(OnSpaceObjectSelected) then
         OnSpaceObjectSelected(ID);
     end;
