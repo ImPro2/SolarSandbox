@@ -17,7 +17,6 @@ type
 
   TSimulationFrame = class(TFrame)
     Image: TImage;
-    //procedure PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
     procedure FrameResize(Sender: TObject);
     procedure FrameMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; var Handled: Boolean);
     procedure FrameMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
@@ -35,6 +34,9 @@ type
     FLastMouseX, FLastMouseY: float32;
     FMouseDeltaNDC: TVector3D;
     FSimulate: boolean;
+
+    FViewGrid: boolean;
+    FViewOrbitTrajectory: boolean;
 
     FViewMatrix, FProjectionMatrix, FViewInverseMatrix, FProjectionInverseMatrix: TMatrix3D;
     FViewProjectionMatrix: TMatrix3D;
@@ -81,6 +83,8 @@ type
     property SelectedSpaceObjectID: uint32 read FSelectedSpaceObjectID write FSelectedSpaceObjectID;
     property Focused: boolean read FFocused write FFocused;
     property PlaybackSpeed: float32 read FPlaybackSpeed write FPlaybackSpeed;
+    property ViewGrid: boolean read FViewGrid write FViewGrid;
+    property ViewOrbitTrajectory: boolean read FViewOrbitTrajectory write FViewOrbitTrajectory;
   end;
 
 implementation
@@ -88,6 +92,9 @@ implementation
 procedure TSimulationFrame.Init();
 begin
   FSimulate := False;
+
+  FViewOrbitTrajectory := False;
+  FViewGrid := True;
 
   FCameraPosition  := TVector3D.Create(0.0, 0.0, 0.0);
   FCameraFocusPanOffset := TVector3D.Create(0.0, 0.0, 0.0);
@@ -224,18 +231,24 @@ begin
 
   // Draw grid
 
-  var GridBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
-  for var GridLine: TPair<TPointF, TPointF> in FGridLines do
+  if FViewGrid then
   begin
-    Canvas.DrawLine(GridLine.Key, GridLine.Value, 1.0, GridBrush);
+    var GridBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
+    for var GridLine: TPair<TPointF, TPointF> in FGridLines do
+    begin
+      Canvas.DrawLine(GridLine.Key, GridLine.Value, 1.0, GridBrush);
+    end;
+    GridBrush.Destroy();
   end;
-  GridBrush.Destroy();
 
   // Draw orbiral trajectory
 
-  var OrbitTrajectoryBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
-  Canvas.DrawPath(FOrbitTrajectoryPathData, 1.0, OrbitTrajectoryBrush);
-  OrbitTrajectoryBrush.Destroy();
+  if FViewOrbitTrajectory then
+  begin
+    var OrbitTrajectoryBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
+    Canvas.DrawPath(FOrbitTrajectoryPathData, 1.0, OrbitTrajectoryBrush);
+    OrbitTrajectoryBrush.Destroy();
+  end;
 
   // Draw space objects
 
@@ -323,6 +336,8 @@ end;
 procedure TSimulationFrame.RecalculateGrid();
 const CMaxHorzGridLines = 5;
 begin
+  if not FViewGrid then Exit;
+
   SetLength(FGridLines, 0);
 
   var BtmLeftWorld:  TVector3D := TVector3D.Create(-1.0, -1.0, 0.0) * FProjectionInverseMatrix * FViewInverseMatrix;
@@ -375,6 +390,8 @@ end;
 procedure TSimulationFrame.RecalculateOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32; AttractorID: uint32);
 const StepCount = 2000;
 begin
+  if not FViewOrbitTrajectory then Exit;
+
   FOrbitTrajectoryPathData.Clear();
 
   // TODO: Find attractor ID for every space object :(

@@ -15,11 +15,19 @@ object PlayBarFrame: TPlayBarFrame
     ShowHint = False
     object pnlPlayStop: TPanel
       Align = FitLeft
-      Size.Width = 26.000000000000000000
-      Size.Height = 26.000000000000000000
+      Margins.Left = 8.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 8.000000000000000000
+      Position.Y = 2.000000000000000000
+      Size.Width = 22.132652282714840000
+      Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       OnClick = pnlPlayStopClick
+      OnMouseEnter = pnlPlayStopMouseEnter
+      OnMouseLeave = pnlPlayStopMouseLeave
       object imgPlay: TImage
         MultiResBitmap = <
           item
@@ -1009,8 +1017,8 @@ object PlayBarFrame: TPlayBarFrame
           end>
         Align = Client
         HitTest = False
-        Size.Width = 26.000000000000000000
-        Size.Height = 26.000000000000000000
+        Size.Width = 22.132652282714840000
+        Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
       end
       object imgStop: TImage
@@ -1764,12 +1772,19 @@ object PlayBarFrame: TPlayBarFrame
     end
     object pnlPauseResume: TPanel
       Align = FitLeft
-      Position.X = 26.000000000000000000
-      Size.Width = 26.000000000000000000
-      Size.Height = 26.000000000000000000
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 34.132652282714840000
+      Position.Y = 2.000000000000000000
+      Size.Width = 22.418365478515630000
+      Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
       OnClick = pnlPauseResumeClick
+      OnMouseEnter = pnlPauseResumeMouseEnter
+      OnMouseLeave = pnlPauseResumeMouseLeave
       object imgPause: TImage
         MultiResBitmap = <
           item
@@ -2542,8 +2557,8 @@ object PlayBarFrame: TPlayBarFrame
           end>
         Align = Client
         HitTest = False
-        Size.Width = 26.000000000000000000
-        Size.Height = 26.000000000000000000
+        Size.Width = 22.418365478515630000
+        Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
       end
       object imgResume: TImage
@@ -2778,8 +2793,9 @@ object PlayBarFrame: TPlayBarFrame
       HorzIncrement = 0.010000000000000000
       VertIncrement = 1.000000000000000000
       Margins.Top = 2.000000000000000000
+      Margins.Right = 4.000000000000000000
       Margins.Bottom = 2.000000000000000000
-      Size.Width = 84.000000000000000000
+      Size.Width = 76.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       OnChange = nbPlaybackSpeedChange
@@ -2794,11 +2810,54 @@ object PlayBarFrame: TPlayBarFrame
     end
   end
   object pnlRight: TPanel
-    Anchors = [akLeft, akTop, akRight]
-    Position.X = 240.000000000000000000
-    Size.Width = 466.000000000000000000
+    Align = Client
+    Size.Width = 497.000000000000000000
     Size.Height = 26.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
+    object btnViewOrbit: TSpeedButton
+      StaysPressed = True
+      Align = FitRight
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 8.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 466.581604003906300000
+      Position.Y = 2.000000000000000000
+      Size.Width = 22.418395996093750000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'O'
+      TextSettings.Trimming = None
+      OnClick = btnViewOrbitClick
+      OnMouseEnter = btnViewOrbitMouseEnter
+      OnMouseLeave = btnViewOrbitMouseLeave
+      object imgViewOrbit: TImage
+        MultiResBitmap = <
+          item
+          end>
+        Align = Client
+        HitTest = False
+        Size.Width = 22.418395996093750000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+      end
+    end
+    object btnViewGrid: TSpeedButton
+      StaysPressed = True
+      Anchors = [akTop, akRight, akBottom]
+      AutoTranslate = False
+      IsPressed = True
+      Position.X = 438.000000000000000000
+      Position.Y = 2.000000000000000000
+      Size.Width = 22.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'G'
+      TextSettings.Trimming = None
+      OnClick = btnViewGridClick
+      OnMouseEnter = btnViewGridMouseEnter
+      OnMouseLeave = btnViewGridMouseLeave
+    end
   end
 end

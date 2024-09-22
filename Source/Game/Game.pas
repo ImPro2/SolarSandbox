@@ -60,6 +60,10 @@ type
     procedure OnGamePause();
     procedure OnGameResume();
     procedure OnPlaybackSpeedChange(PlaybackSpeed: float32);
+    procedure OnViewGrid();
+    procedure OnHideGrid();
+    procedure OnViewOrbitTrajectory();
+    procedure OnHideOrbitTrajectory();
     procedure OnSimulationSpaceObjectSelected(ID: uint32);
 
   public
@@ -107,6 +111,10 @@ begin
   FPlayBarFrame.OnGamePause  := Self.OnGamePause;
   FPlayBarFrame.OnGameResume := Self.OnGameResume;
   FPlayBarFrame.OnPlaybackSpeedChange := Self.OnPlaybackSpeedChange;
+  FPlayBarFrame.OnViewGrid := Self.OnViewGrid;
+  FPlayBarFrame.OnHideGrid := Self.OnHideGrid;
+  FPlayBarFrame.OnViewOrbitTrajectory := Self.OnViewOrbitTrajectory;
+  FPlayBarFrame.OnHideOrbitTrajectory := Self.OnHideOrbitTrajectory;
   FPlayBarFrame.Visible      := False;
 
   FSimulationFrame           := TSimulationFrame.Create(Self);
@@ -190,6 +198,26 @@ end;
 procedure TGameFrame.OnPlaybackSpeedChange(PlaybackSpeed: float32);
 begin
   FSimulationFrame.PlaybackSpeed := PlaybackSpeed;
+end;
+
+procedure TGameFrame.OnViewGrid();
+begin
+  FSimulationFrame.ViewGrid := True;
+end;
+
+procedure TGameFrame.OnHideGrid();
+begin
+  FSimulationFrame.ViewGrid := False;
+end;
+
+procedure TGameFrame.OnViewOrbitTrajectory();
+begin
+  FSimulationFrame.ViewOrbitTrajectory := True;
+end;
+
+procedure TGameFrame.OnHideOrbitTrajectory();
+begin
+  FSimulationFrame.ViewOrbitTrajectory := False;
 end;
 
 procedure TGameFrame.OnSimulationSpaceObjectSelected(ID: uint32);
