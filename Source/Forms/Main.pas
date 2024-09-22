@@ -56,6 +56,8 @@ begin
   frmGame.Parent := Self;
   frmGame.Visible := False;
 
+  //ReportMemoryLeaksOnShutdown := True;
+
   Logger.Info('Successfully initialized application.');
 end;
 

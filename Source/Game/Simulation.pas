@@ -68,7 +68,7 @@ type
     procedure UpdateSpaceBodyPosition(fDeltaTime: float32; i: int32);
     procedure UpdateSpaceBodyRendering(i: int32);
 
-    procedure PaintToCanvas(Canvas: TCanvas);
+    procedure PaintToCanvas(var Canvas: TCanvas);
   public
     property Simulate: boolean read FSimulate write FSimulate;
     property FocusedSpaceObjectID: uint32 read FFocusedSpaceObjectID write FFocusedSpaceObjectID;
@@ -96,6 +96,8 @@ begin
 
   FFocusedSpaceObjectID := 0;
   FPlaybackSpeed := 1.0;
+
+  FOrbitTrajectoryPathData := TPathData.Create();
 
   FPositionDictionary := TPositionDictionary.Create();
 end;
@@ -248,9 +250,10 @@ end;
 procedure TSimulationFrame.GenerateThumbnail(Path: string);
 begin
   var Bitmap: TBitmap := TBitmap.Create(Round(Width), Round(Height));
-  PaintToCanvas(Bitmap.Canvas);
+  //PaintToCanvas(Bitmap.Canvas);
 
   Bitmap.SaveToFile(Path);
+  Bitmap.Destroy();
 end;
 
 procedure TSimulationFrame.RecalculateViewProjectionMatrix();
@@ -325,7 +328,7 @@ end;
 procedure TSimulationFrame.RecalculateOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32; AttractorID: uint32);
 const StepCount = 2000;
 begin
-  FOrbitTrajectoryPathData := TPathData.Create();
+  FOrbitTrajectoryPathData.Clear();
 
   // TODO: Find attractor ID for every space object :(
   var SpaceObject: TSpaceObject := SpaceObjectFromID(SpaceObjectID);
@@ -388,7 +391,7 @@ begin
   FOrbitTrajectoryPathData.ClosePath();
 end;
 
-procedure TSimulationFrame.PaintToCanvas(Canvas: TCanvas);
+procedure TSimulationFrame.PaintToCanvas(var Canvas: TCanvas);
 begin
   if FPositionDictionary.IsEmpty then
     Exit;
@@ -400,22 +403,28 @@ begin
 
   // Draw grid
 
+  var GridBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
   for var GridLine: TPair<TPointF, TPointF> in FGridLines do
   begin
-    Canvas.DrawLine(GridLine.Key, GridLine.Value, 1.0, TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.Dimgray));
+    Canvas.DrawLine(GridLine.Key, GridLine.Value, 1.0, GridBrush);
   end;
+  GridBrush.Destroy();
 
   // Draw orbiral trajectory
 
-  Canvas.DrawPath(FOrbitTrajectoryPathData, 1.0, TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.Blue));
+  var OrbitTrajectoryBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
+  Canvas.DrawPath(FOrbitTrajectoryPathData, 1.0, OrbitTrajectoryBrush);
+  OrbitTrajectoryBrush.Destroy();
 
   // Draw space objects
 
+  var SpaceObjectBrush: TBrush := TBrush.Create(TBrushKind.Solid, TAlphaColors.Red);
   for var spaceObj: TSpaceObject in GSpaceObjects do
   begin
     var rectf: TRectF := FPositionDictionary[spaceObj.ID];
-    Canvas.FillEllipse(rectf, 1.0, TBrush.Create(TBrushKind.Solid, TAlphaColors.Red));
+    Canvas.FillEllipse(rectf, 1.0, SpaceObjectBrush);
   end;
+  SpaceObjectBrush.Destroy();
 
   Canvas.EndScene();
 end;
