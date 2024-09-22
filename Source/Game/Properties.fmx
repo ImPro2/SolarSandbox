@@ -1,6 +1,6 @@
 object PropertiesFrame: TPropertiesFrame
   Align = Client
-  Size.Width = 250.000000000000000000
+  Size.Width = 292.000000000000000000
   Size.Height = 532.000000000000000000
   Size.PlatformDefault = False
   object lblHeading: TLabel
@@ -21,7 +21,7 @@ object PropertiesFrame: TPropertiesFrame
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 41.000000000000000000
-    Size.Width = 234.000000000000000000
+    Size.Width = 276.000000000000000000
     Size.Height = 483.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
@@ -57,7 +57,7 @@ object PropertiesFrame: TPropertiesFrame
       TabOrder = 2
       Position.X = 64.000000000000000000
       Position.Y = 16.000000000000000000
-      Size.Width = 162.000000000000000000
+      Size.Width = 204.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       OnChange = edtNameChange
@@ -69,7 +69,7 @@ object PropertiesFrame: TPropertiesFrame
       Cursor = crIBeam
       Position.X = 64.000000000000000000
       Position.Y = 46.000000000000000000
-      Size.Width = 162.000000000000000000
+      Size.Width = 204.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       OnChange = spnMassChange
@@ -126,46 +126,15 @@ object PropertiesFrame: TPropertiesFrame
       Anchors = [akLeft, akTop, akRight]
       Position.X = 63.000000000000000000
       Position.Y = 120.000000000000000000
-      Size.Width = 163.000000000000000000
+      Size.Width = 205.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 8
-      object nbPositionX: TNumberBox
-        Touch.InteractiveGestures = [LongTap, DoubleTap]
-        TabOrder = 8
-        Cursor = crSizeWE
-        Min = -10000.000000000000000000
-        Max = 10000.000000000000000000
-        ValueType = Float
-        KeyboardType = NumbersAndPunctuation
-        Position.X = 22.000000000000000000
-        HorzIncrement = 0.010000000000000000
-        Size.Width = 59.000000000000000000
-        Size.Height = 22.000000000000000000
-        Size.PlatformDefault = False
-        OnChange = nbPositionXChange
-      end
-      object nbPositionY: TNumberBox
-        Touch.InteractiveGestures = [LongTap, DoubleTap]
-        Anchors = []
-        TabOrder = 9
-        Cursor = crSizeWE
-        Min = -10000.000000000000000000
-        Max = 10000.000000000000000000
-        ValueType = Float
-        KeyboardType = NumbersAndPunctuation
-        Position.X = 104.000000000000000000
-        HorzIncrement = 0.100000000000000000
-        Size.Width = 59.000000000000000000
-        Size.Height = 22.000000000000000000
-        Size.PlatformDefault = False
-        OnChange = nbPositionYChange
-      end
       object lblPositionX: TLabel
         Align = Scale
-        Anchors = []
         StyledSettings = [FontColor]
-        Size.Width = 24.238168716430660000
+        Position.X = 1.457369089126587000
+        Size.Width = 23.367790222167970000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TextSettings.Font.Family = 'Roboto'
@@ -174,37 +143,82 @@ object PropertiesFrame: TPropertiesFrame
         TextSettings.HorzAlign = Center
         TextSettings.Trimming = None
         Text = 'X'
+        TabOrder = 8
+      end
+      object lblPositionXValue: TLabel
+        Align = Scale
+        Position.X = 23.367786407470700000
+        Size.Width = 79.662963867187500000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
         TabOrder = 10
+        object nbPositionX: TNumberBox
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Client
+          TabOrder = 7
+          Cursor = crSizeWE
+          Min = -10000.000000000000000000
+          Max = 10000.000000000000000000
+          ValueType = Float
+          KeyboardType = NumbersAndPunctuation
+          HorzIncrement = 0.010000000000000000
+          Size.Width = 79.662963867187500000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = nbPositionXChange
+        end
+      end
+      object lblPositionYValue: TLabel
+        Align = Scale
+        Position.X = 126.398841857910200000
+        Size.Width = 78.601646423339840000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 11
+        object nbPositionY: TNumberBox
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Client
+          TabOrder = 8
+          Cursor = crSizeWE
+          Min = -10000.000000000000000000
+          Max = 10000.000000000000000000
+          ValueType = Float
+          KeyboardType = NumbersAndPunctuation
+          HorzIncrement = 0.100000000000000000
+          Size.Width = 78.601646423339840000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = nbPositionYChange
+        end
       end
       object lblPositionY: TLabel
+        Align = Scale
         StyledSettings = [FontColor]
-        Position.X = 82.000000000000000000
-        Size.Width = 22.000000000000000000
-        Size.Height = 17.000000000000000000
+        Position.X = 101.968597412109400000
+        Size.Width = 23.367919921875000000
+        Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TextSettings.Font.Family = 'Roboto'
         TextSettings.Font.Size = 13.000000000000000000
         TextSettings.Font.StyleExt = {00070000000000000004000000}
         TextSettings.HorzAlign = Center
-        TextSettings.VertAlign = Trailing
         TextSettings.Trimming = None
         Text = 'Y'
-        TabOrder = 11
+        TabOrder = 9
       end
     end
     object pnlVelocity: TPanel
       Anchors = [akLeft, akTop, akRight]
       Position.X = 64.000000000000000000
       Position.Y = 160.000000000000000000
-      Size.Width = 162.000000000000000000
+      Size.Width = 204.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 9
       object lblVelocityX: TLabel
         Align = Scale
-        Anchors = []
         StyledSettings = [FontColor]
-        Size.Width = 24.000000000000000000
+        Size.Width = 23.375003814697270000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TextSettings.Font.Family = 'Roboto'
@@ -213,53 +227,68 @@ object PropertiesFrame: TPropertiesFrame
         TextSettings.HorzAlign = Center
         TextSettings.Trimming = None
         Text = 'X'
-        TabOrder = 9
+        TabOrder = 7
       end
       object lblVelocityY: TLabel
+        Align = Scale
         StyledSettings = [FontColor]
-        Position.X = 82.000000000000000000
-        Size.Width = 22.000000000000000000
-        Size.Height = 17.000000000000000000
+        Position.X = 101.999687194824200000
+        Size.Width = 23.374778747558590000
+        Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TextSettings.Font.Family = 'Roboto'
         TextSettings.Font.Size = 13.000000000000000000
         TextSettings.Font.StyleExt = {00070000000000000004000000}
         TextSettings.HorzAlign = Center
-        TextSettings.VertAlign = Trailing
         TextSettings.Trimming = None
         Text = 'Y'
-        TabOrder = 10
-      end
-      object nbVelocityX: TNumberBox
-        Touch.InteractiveGestures = [LongTap, DoubleTap]
-        TabOrder = 7
-        Cursor = crSizeWE
-        Min = -10000.000000000000000000
-        Max = 10000.000000000000000000
-        ValueType = Float
-        KeyboardType = NumbersAndPunctuation
-        Position.X = 22.000000000000000000
-        HorzIncrement = 0.100000000000000000
-        Size.Width = 59.000000000000000000
-        Size.Height = 22.000000000000000000
-        Size.PlatformDefault = False
-        OnChange = nbVelocityXChange
-      end
-      object nbVelocityY: TNumberBox
-        Touch.InteractiveGestures = [LongTap, DoubleTap]
-        Anchors = []
         TabOrder = 8
-        Cursor = crSizeWE
-        Min = -10000.000000000000000000
-        Max = 10000.000000000000000000
-        ValueType = Float
-        KeyboardType = NumbersAndPunctuation
-        Position.X = 104.000000000000000000
-        HorzIncrement = 0.100000000000000000
-        Size.Width = 59.000000000000000000
+      end
+      object lblVelocityXValue: TLabel
+        Align = Scale
+        Position.X = 23.375003814697270000
+        Size.Width = 78.625183105468750000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
-        OnChange = nbVelocityYChange
+        TabOrder = 9
+        object nbVelocityX: TNumberBox
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Client
+          TabOrder = 6
+          Cursor = crSizeWE
+          Min = -10000.000000000000000000
+          Max = 10000.000000000000000000
+          ValueType = Float
+          KeyboardType = NumbersAndPunctuation
+          HorzIncrement = 0.100000000000000000
+          Size.Width = 78.625183105468750000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = nbVelocityXChange
+        end
+      end
+      object lblVelocityYValue: TLabel
+        Align = Scale
+        Position.X = 125.374923706054700000
+        Size.Width = 78.625534057617190000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 10
+        object nbVelocityY: TNumberBox
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Client
+          TabOrder = 7
+          Cursor = crSizeWE
+          Min = -10000.000000000000000000
+          Max = 10000.000000000000000000
+          ValueType = Float
+          KeyboardType = NumbersAndPunctuation
+          HorzIncrement = 0.100000000000000000
+          Size.Width = 78.625534057617190000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = nbVelocityYChange
+        end
       end
     end
   end

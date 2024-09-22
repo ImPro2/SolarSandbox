@@ -163,23 +163,27 @@ end;
 
 procedure TGameFrame.OnGameStart();
 begin
+  FPropertiesFrame.OnGameStartOrResume();
   FSimulationFrame.Simulate := True;
   FProjectInfo.SpaceObjects := Copy(GSpaceObjects, 0, Length(GSpaceObjects));
 end;
 
 procedure TGameFrame.OnGameStop();
 begin
+  FPropertiesFrame.OnGameStopOrPause();
   GSpaceObjects := Copy(FProjectInfo.SpaceObjects, 0, Length(FProjectInfo.SpaceObjects));
   FSimulationFrame.Simulate := False;
 end;
 
 procedure TGameFrame.OnGamePause();
 begin
+  FPropertiesFrame.OnGameStopOrPause();
   FSimulationFrame.Simulate := False;
 end;
 
 procedure TGameFrame.OnGameResume();
 begin
+  FPropertiesFrame.OnGameStartOrResume();
   FSimulationFrame.Simulate := True;
 end;
 

@@ -25,23 +25,32 @@ type
     pnlVelocity: TPanel;
     nbPositionY: TNumberBox;
     lblPositionX: TLabel;
-    lblPositionY: TLabel;
     lblVelocityX: TLabel;
     nbVelocityX: TNumberBox;
     lblVelocityY: TLabel;
     nbVelocityY: TNumberBox;
+    lblPositionXValue: TLabel;
+    lblPositionYValue: TLabel;
+    lblPositionY: TLabel;
+    lblVelocityXValue: TLabel;
+    lblVelocityYValue: TLabel;
     procedure edtNameChange(Sender: TObject);
     procedure spnMassChange(Sender: TObject);
     procedure nbPositionXChange(Sender: TObject);
     procedure nbPositionYChange(Sender: TObject);
     procedure nbVelocityXChange(Sender: TObject);
     procedure nbVelocityYChange(Sender: TObject);
-  private
-    FSpaceObjectID: uint32;
-
-    procedure EnableOrDisableComponents(Enabled: boolean);
   public
     procedure OnUpdate(SelectedSpaceObjectID: uint32);
+
+    procedure OnGameStartOrResume();
+    procedure OnGameStopOrPause();
+  private
+    FSpaceObjectID: uint32;
+    FIsSimulating: boolean;
+
+    procedure EnableOrDisableComponents(Enabled: boolean);
+    procedure FillDataFromSpaceObject();
   end;
 
 implementation
@@ -53,27 +62,39 @@ begin
   if FSpaceObjectID = 0 then
   begin
     EnableOrDisableComponents(False);
-  end else
+    Exit;
+  end;
+
+  EnableOrDisableComponents(True);
+  FillDataFromSpaceObject();
+
+  if not FIsSimulating then
   begin
-    EnableOrDisableComponents(True);
-
-    var spaceObj: TSpaceObject := SpaceObjectFromID(FSpaceObjectID);
-
-    lblIDText.Text    := spaceObj.ID.ToString();
-    edtName.Text      := spaceObj.Name;
-    spnMass.Value     := spaceObj.Mass;
-
-    nbPositionX.Value := spaceObj.PositionX;
-    nbPositionY.Value := spaceObj.PositionY;
-
-    nbVelocityX.Value := spaceObj.VelocityX;
-    nbVelocityY.Value := spaceObj.VelocityY;
-
     nbPositionX.Repaint();
     nbPositionY.Repaint();
     nbVelocityX.Repaint();
     nbVelocityY.Repaint();
   end;
+end;
+
+procedure TPropertiesFrame.OnGameStartOrResume();
+begin
+  nbPositionX.Visible := False;
+  nbPositionY.Visible := False;
+  nbVelocityX.Visible := False;
+  nbVelocityY.Visible := False;
+
+  FIsSimulating := True;
+end;
+
+procedure TPropertiesFrame.OnGameStopOrPause();
+begin
+  nbPositionX.Visible := True;
+  nbPositionY.Visible := True;
+  nbVelocityX.Visible := True;
+  nbVelocityY.Visible := True;
+
+  FIsSimulating := False;
 end;
 
 procedure TPropertiesFrame.EnableOrDisableComponents(Enabled: boolean);
@@ -85,6 +106,33 @@ begin
   nbPositionY.Enabled := Enabled;
   nbVelocityX.Enabled := Enabled;
   nbVelocityY.Enabled := Enabled;
+end;
+
+procedure TPropertiesFrame.FillDataFromSpaceObject();
+begin
+  var SpaceObject: TSpaceObject := SpaceObjectFromID(FSpaceObjectID);
+
+  lblIDText.Text    := SpaceObject.ID.ToString();
+  edtName.Text      := SpaceObject.Name;
+  spnMass.Value     := SpaceObject.Mass;
+
+  if not FIsSimulating then
+  begin
+    nbPositionX.Value := SpaceObject.PositionX;
+    nbPositionY.Value := SpaceObject.PositionY;
+    nbVelocityX.Value := SpaceObject.VelocityX;
+    nbVelocityY.Value := SpaceObject.VelocityY;
+    lblPositionXValue.Text := '';
+    lblPositionYValue.Text := '';
+    lblVelocityXValue.Text := '';
+    lblVelocityYValue.Text := '';
+  end else
+  begin
+    lblPositionXValue.Text := FloatToStr(SpaceObject.PositionX);
+    lblPositionYValue.Text := FloatToStr(SpaceObject.PositionY);
+    lblVelocityXValue.Text := FloatToStr(SpaceObject.VelocityX);
+    lblVelocityYValue.Text := FloatToStr(SpaceObject.VelocityY);
+  end;
 end;
 
 procedure TPropertiesFrame.nbPositionXChange(Sender: TObject);
