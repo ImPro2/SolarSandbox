@@ -60,6 +60,7 @@ type
     procedure OnGamePause();
     procedure OnGameResume();
     procedure OnPlaybackSpeedChange(PlaybackSpeed: float32);
+    procedure OnOrbitTrajectoryCalculationStepCountChanged(StepCount: int32);
     procedure OnViewGrid();
     procedure OnHideGrid();
     procedure OnViewOrbitTrajectory();
@@ -111,6 +112,7 @@ begin
   FPlayBarFrame.OnGamePause  := Self.OnGamePause;
   FPlayBarFrame.OnGameResume := Self.OnGameResume;
   FPlayBarFrame.OnPlaybackSpeedChange := Self.OnPlaybackSpeedChange;
+  FPlayBarFrame.OnOrbitTrajectoryCalculationStepCountChanged := Self.OnOrbitTrajectoryCalculationStepCountChanged;
   FPlayBarFrame.OnViewGrid := Self.OnViewGrid;
   FPlayBarFrame.OnHideGrid := Self.OnHideGrid;
   FPlayBarFrame.OnViewOrbitTrajectory := Self.OnViewOrbitTrajectory;
@@ -198,6 +200,11 @@ end;
 procedure TGameFrame.OnPlaybackSpeedChange(PlaybackSpeed: float32);
 begin
   FSimulationFrame.PlaybackSpeed := PlaybackSpeed;
+end;
+
+procedure TGameFrame.OnOrbitTrajectoryCalculationStepCountChanged(StepCount: int32);
+begin
+  FSimulationFrame.OrbitTrajectoryCalculationStepCount := StepCount;
 end;
 
 procedure TGameFrame.OnViewGrid();

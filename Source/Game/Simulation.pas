@@ -12,6 +12,7 @@ uses
 type
   TPositionDictionary = TDictionary<uint32, TRectF>;
   TGridLines = array of TPair<TPointF, TPointF>;
+  TOrbitTrajectoryData = array of TPair<TPointF, TPointF>;
 
   TSpaceObjectSelectedEvent = procedure(ID: uint32) of object;
 
@@ -38,6 +39,8 @@ type
     FViewGrid: boolean;
     FViewOrbitTrajectory: boolean;
 
+    FOrbitTrajectoryCalculationStepCount: int32;
+
     FViewMatrix, FProjectionMatrix, FViewInverseMatrix, FProjectionInverseMatrix: TMatrix3D;
     FViewProjectionMatrix: TMatrix3D;
 
@@ -48,8 +51,6 @@ type
 
     FAspectRatio: float32;
 
-    FOrbitTrajectoryPathData: TPathData;
-
     FSelectedSpaceObjectID: uint32;
     FFocused: boolean;
 
@@ -57,6 +58,7 @@ type
 
     FPositionDictionary: TPositionDictionary;
     FGridLines: TGridLines;
+    FOrbitTrajectoryData: TOrbitTrajectoryData;
   public
     OnSpaceObjectSelected: TSpaceObjectSelectedEvent;
 
@@ -85,6 +87,7 @@ type
     property PlaybackSpeed: float32 read FPlaybackSpeed write FPlaybackSpeed;
     property ViewGrid: boolean read FViewGrid write FViewGrid;
     property ViewOrbitTrajectory: boolean read FViewOrbitTrajectory write FViewOrbitTrajectory;
+    property OrbitTrajectoryCalculationStepCount: int32 read FOrbitTrajectoryCalculationStepCount write FOrbitTrajectoryCalculationStepCount;
   end;
 
 implementation
@@ -95,6 +98,8 @@ begin
 
   FViewOrbitTrajectory := False;
   FViewGrid := True;
+
+  FOrbitTrajectoryCalculationStepCount := 5000;
 
   FCameraPosition  := TVector3D.Create(0.0, 0.0, 0.0);
   FCameraFocusPanOffset := TVector3D.Create(0.0, 0.0, 0.0);
@@ -110,17 +115,17 @@ begin
 
   FPlaybackSpeed := 1.0;
 
-  FOrbitTrajectoryPathData := TPathData.Create();
+  SetLength(FOrbitTrajectoryData, 0);
 
   FPositionDictionary := TPositionDictionary.Create();
 end;
 
 procedure TSimulationFrame.OnUpdate(fDeltaTime: float32);
 begin
-  fDeltaTime := fDeltaTime * FPlaybackSpeed;
+  var DeltaTimeWithPlaybackSpeed: float32 := fDeltaTime * FPlaybackSpeed;
 
-  UpdateCameraMovement(fDeltaTime);
-  UpdateSpaceBodies(fDeltaTime);
+  UpdateCameraMovement(DeltaTimeWithPlaybackSpeed);
+  UpdateSpaceBodies(DeltaTimeWithPlaybackSpeed);
 
   // Temporary
   RecalculateOrbitTrajectory(fDeltaTime, GSpaceObjects[1].ID, GSpaceObjects[0].ID);
@@ -245,8 +250,16 @@ begin
 
   if FViewOrbitTrajectory then
   begin
-    var OrbitTrajectoryBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
-    Canvas.DrawPath(FOrbitTrajectoryPathData, 1.0, OrbitTrajectoryBrush);
+    var OrbitTrajectoryBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.White);
+    OrbitTrajectoryBrush.Thickness := 0.5;
+    var Count: int32 := Length(FOrbitTrajectoryData);
+    for var i: int32 := 0 to Count - 1 do
+    begin
+      var Opacity: float32 := float32(Count - i + 1) / Count;
+
+      var LinePair: TPair<TPointF, TPointF> := FOrbitTrajectoryData[i];
+      Canvas.DrawLine(LinePair.Key, LinePair.Value, Opacity, OrbitTrajectoryBrush);
+    end;
     OrbitTrajectoryBrush.Destroy();
   end;
 
@@ -388,17 +401,17 @@ begin
 end;
 
 procedure TSimulationFrame.RecalculateOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32; AttractorID: uint32);
-const StepCount = 2000;
 begin
   if not FViewOrbitTrajectory then Exit;
 
-  FOrbitTrajectoryPathData.Clear();
+  SetLength(FOrbitTrajectoryData, FOrbitTrajectoryCalculationStepCount);
 
   // TODO: Find attractor ID for every space object :(
   var SpaceObject: TSpaceObject := SpaceObjectFromID(SpaceObjectID);
   var Attractor:   TSpaceObject := SpaceObjectFromID(AttractorID);
 
   var G: float32 := 1.0;
+  fDeltaTime := fDeltaTime * 5;
 
   var PositionX: float32 := SpaceObject.PositionX;
   var PositionY: float32 := SpaceObject.PositionY;
@@ -410,7 +423,15 @@ begin
   var AttractorVelocityX: float32 := Attractor.VelocityX;
   var AttractorVelocityY: float32 := Attractor.VelocityY;
 
-  for var i: int32 := 1 to StepCount do
+  var LastPoint: TPointF := TPointF.Zero;
+
+  begin
+    var NDC: TVector3D := TVector3D.Create(PositionX, PositionY, 0.0) * FViewProjectionMatrix;
+    var ScreenCoords: TPointF := NDCToScreenCoords(NDC);
+    LastPoint := ScreenCoords;
+  end;
+
+  for var i: int32 := 0 to Length(FOrbitTrajectoryData) - 1 do
   begin
     // Calculate gravitational force
 
@@ -449,10 +470,14 @@ begin
 
     var NDC: TVector3D := TVector3D.Create(PositionX, PositionY, 0.0) * FViewProjectionMatrix;
     var ScreenCoords: TPointF := NDCToScreenCoords(NDC);
-    FOrbitTrajectoryPathData.LineTo(ScreenCoords);
-    FOrbitTrajectoryPathData.MoveTo(ScreenCoords);
+
+    FOrbitTrajectoryData[i] := TPair<TPointF, TPointF>.Create(LastPoint, ScreenCoords);
+    LastPoint := ScreenCoords;
+    //FOrbitTrajectoryPathData.LineTo(ScreenCoords);
+    //FOrbitTrajectoryPathData.MoveTo(ScreenCoords);
   end;
-  FOrbitTrajectoryPathData.ClosePath();
+
+  //FOrbitTrajectoryPathData.ClosePath();
 end;
 
 {$EndRegion}

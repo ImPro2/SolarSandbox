@@ -15,6 +15,7 @@ type
   TGameResumeEvent = procedure() of object;
 
   TPlaybackSpeedChangedEvent = procedure(PlaybackSpeed: float32) of object;
+  TOrbitTrajectoryCalculationStepCountChangedEvent = procedure(StepCount: int32) of object;
 
   TViewGridEvent = procedure() of object;
   THideGridevent = procedure() of object;
@@ -36,6 +37,9 @@ type
     btnViewOrbit: TSpeedButton;
     imgViewOrbit: TImage;
     btnViewGrid: TSpeedButton;
+    nbOrbitCalcStepCount: TNumberBox;
+    lblOrbitCalcStepCount: TLabel;
+    pnlOrbitCalcStep: TPanel;
     procedure pnlPlayStopClick(Sender: TObject);
     procedure pnlPauseResumeClick(Sender: TObject);
     procedure nbPlaybackSpeedChange(Sender: TObject);
@@ -49,6 +53,9 @@ type
     procedure btnViewGridMouseLeave(Sender: TObject);
     procedure btnViewOrbitMouseEnter(Sender: TObject);
     procedure btnViewOrbitMouseLeave(Sender: TObject);
+    procedure nbOrbitCalcStepCountChange(Sender: TObject);
+    procedure pnlOrbitCalcStepMouseEnter(Sender: TObject);
+    procedure pnlOrbitCalcStepMouseLeave(Sender: TObject);
 
   public
     OnGameStart:  TGameStartEvent;
@@ -57,6 +64,7 @@ type
     OnGameResume: TGameResumeEvent;
 
     OnPlaybackSpeedChange: TPlaybackSpeedChangedEvent;
+    OnOrbitTrajectoryCalculationStepCountChanged: TOrbitTrajectoryCalculationStepCountChangedEvent;
 
     OnViewGrid: TViewGridEvent;
     OnHideGrid: THideGridEvent;
@@ -94,6 +102,7 @@ begin
   FTooltipLabel := TLabel.Create(Self);
   FTooltipLabel.Parent := FPopup;
   FTooltipLabel.TextSettings.FontColor := TAlphaColors.Gray;
+  FTooltipLabel.Width := 80;
 end;
 
 procedure TPlayBarFrame.ShowTooltip(Tooltip: string; Target: TControl);
@@ -129,6 +138,16 @@ begin
 end;
 
 procedure TPlayBarFrame.pnlPauseResumeMouseLeave(Sender: TObject);
+begin
+  HideTooltip();
+end;
+
+procedure TPlayBarFrame.pnlOrbitCalcStepMouseEnter(Sender: TObject);
+begin
+  ShowTooltip('Number of Orbit Trajectory Calculation Steps', pnlOrbitCalcStep);
+end;
+
+procedure TPlayBarFrame.pnlOrbitCalcStepMouseLeave(Sender: TObject);
 begin
   HideTooltip();
 end;
@@ -204,6 +223,12 @@ procedure TPlayBarFrame.nbPlaybackSpeedChange(Sender: TObject);
 begin
   if Assigned(OnPlaybackSpeedChange) then
     OnPlaybackSpeedChange(nbPlaybackSpeed.Value);
+end;
+
+procedure TPlayBarFrame.nbOrbitCalcStepCountChange(Sender: TObject);
+begin
+  if Assigned(OnOrbitTrajectoryCalculationStepCountChanged) then
+    OnOrbitTrajectoryCalculationStepCountChanged(Round(nbOrbitCalcStepCount.Value));
 end;
 
 procedure TPlayBarFrame.btnViewGridClick(Sender: TObject);

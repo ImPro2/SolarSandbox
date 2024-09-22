@@ -1,6 +1,6 @@
 object PlayBarFrame: TPlayBarFrame
   Align = Client
-  Size.Width = 706.000000000000000000
+  Size.Width = 696.000000000000000000
   Size.Height = 26.000000000000000000
   Size.PlatformDefault = False
   object pnlLeft: TPanel
@@ -2801,17 +2801,20 @@ object PlayBarFrame: TPlayBarFrame
       OnChange = nbPlaybackSpeedChange
     end
     object lblPlaybackSpeed: TLabel
+      StyledSettings = [Size, Style, FontColor]
       Position.X = 65.000000000000000000
       Size.Width = 70.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Roboto'
       Text = 'Speed:'
       TabOrder = 4
     end
   end
   object pnlRight: TPanel
-    Align = Client
-    Size.Width = 497.000000000000000000
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 378.000000000000000000
+    Size.Width = 318.000000000000000000
     Size.Height = 26.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
@@ -2822,9 +2825,9 @@ object PlayBarFrame: TPlayBarFrame
       Margins.Top = 2.000000000000000000
       Margins.Right = 8.000000000000000000
       Margins.Bottom = 2.000000000000000000
-      Position.X = 466.581604003906300000
+      Position.X = 287.581970214843800000
       Position.Y = 2.000000000000000000
-      Size.Width = 22.418395996093750000
+      Size.Width = 22.418029785156250000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       Text = 'O'
@@ -2838,7 +2841,7 @@ object PlayBarFrame: TPlayBarFrame
           end>
         Align = Client
         HitTest = False
-        Size.Width = 22.418395996093750000
+        Size.Width = 22.418029785156250000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
       end
@@ -2848,7 +2851,7 @@ object PlayBarFrame: TPlayBarFrame
       Anchors = [akTop, akRight, akBottom]
       AutoTranslate = False
       IsPressed = True
-      Position.X = 438.000000000000000000
+      Position.X = 259.000000000000000000
       Position.Y = 2.000000000000000000
       Size.Width = 22.000000000000000000
       Size.Height = 22.000000000000000000
@@ -2858,6 +2861,51 @@ object PlayBarFrame: TPlayBarFrame
       OnClick = btnViewGridClick
       OnMouseEnter = btnViewGridMouseEnter
       OnMouseLeave = btnViewGridMouseLeave
+    end
+  end
+  object pnlOrbitCalcStep: TPanel
+    Align = FitLeft
+    Position.X = 209.000000000000000000
+    Size.Width = 168.000000000000000000
+    Size.Height = 26.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    OnMouseEnter = pnlOrbitCalcStepMouseEnter
+    OnMouseLeave = pnlOrbitCalcStepMouseLeave
+    object lblOrbitCalcStepCount: TLabel
+      Align = Left
+      StyledSettings = [Size, Style, FontColor]
+      Margins.Left = 8.000000000000000000
+      Margins.Right = 4.000000000000000000
+      Position.X = 8.000000000000000000
+      Size.Width = 73.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Roboto'
+      Text = 'Step Count:'
+      TabOrder = 0
+    end
+    object nbOrbitCalcStepCount: TNumberBox
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = FitLeft
+      TabOrder = 1
+      Cursor = crSizeWE
+      DecimalDigits = 0
+      Min = 1.000000000000000000
+      Max = 1000000.000000000000000000
+      Value = 100.000000000000000000
+      ValueType = Float
+      KeyboardType = NumbersAndPunctuation
+      Position.X = 85.000000000000000000
+      Position.Y = 2.000000000000000000
+      VertIncrement = 1.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 4.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 76.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      OnChange = nbOrbitCalcStepCountChange
     end
   end
 end
