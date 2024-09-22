@@ -22,6 +22,7 @@ type
     procedure FrameMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; var Handled: Boolean);
     procedure FrameMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
     procedure FrameMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+    procedure FrameKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
     procedure ImagePaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
 
   public
@@ -39,6 +40,7 @@ type
     FViewProjectionMatrix: TMatrix3D;
 
     FCameraPosition: TVector3D;
+    FCameraFocusPanOffset: TVector3D;
     FCameraZoomLevel: float32;
     FCameraSpeed: float32;
 
@@ -46,7 +48,9 @@ type
 
     FOrbitTrajectoryPathData: TPathData;
 
-    FFocusedSpaceObjectID: uint32;
+    FSelectedSpaceObjectID: uint32;
+    FFocused: boolean;
+
     FPlaybackSpeed: float32;
 
     FPositionDictionary: TPositionDictionary;
@@ -55,23 +59,27 @@ type
     OnSpaceObjectSelected: TSpaceObjectSelectedEvent;
 
   private
-    function NDCToScreenCoords(NDC: TVector3D): TPointF;
-    function ScreenCoordsToNDC(ScreenX: float32; ScreenY: float32): TVector3D;
-    function NDCToWorldSpace(NDC: TVector3D): TVector3D;
+    // Update functions
+    procedure UpdateCameraMovement(fDeltaTime: float32);
+    procedure UpdateSpaceBodies(fDeltaTime: float32);
+    procedure UpdateSpaceBodyPosition(fDeltaTime: float32; i: int32);
 
+    // Rendering and Rendering Calculations
+    procedure PaintToCanvas(var Canvas: TCanvas);
+    procedure RecalculateSpaceBodyRendering(i: int32);
     procedure RecalculateViewProjectionMatrix();
     procedure RecalculateGrid();
     procedure RecalculateOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32; AttractorID: uint32);
 
-    procedure UpdateCameraMovement(fDeltaTime: float32);
-    procedure UpdateSpaceBodies(fDeltaTime: float32);
-    procedure UpdateSpaceBodyPosition(fDeltaTime: float32; i: int32);
-    procedure UpdateSpaceBodyRendering(i: int32);
+    // Conversions
+    function NDCToScreenCoords(NDC: TVector3D): TPointF;
+    function ScreenCoordsToNDC(ScreenX: float32; ScreenY: float32): TVector3D;
+    function NDCToWorldSpace(NDC: TVector3D): TVector3D;
 
-    procedure PaintToCanvas(var Canvas: TCanvas);
   public
     property Simulate: boolean read FSimulate write FSimulate;
-    property FocusedSpaceObjectID: uint32 read FFocusedSpaceObjectID write FFocusedSpaceObjectID;
+    property SelectedSpaceObjectID: uint32 read FSelectedSpaceObjectID write FSelectedSpaceObjectID;
+    property Focused: boolean read FFocused write FFocused;
     property PlaybackSpeed: float32 read FPlaybackSpeed write FPlaybackSpeed;
   end;
 
@@ -79,14 +87,10 @@ implementation
 
 procedure TSimulationFrame.Init();
 begin
-  Self.OnResize      := Self.FrameResize;
-  Image.OnMouseMove  := Self.FrameMouseMove;
-  Image.OnMouseWheel := Self.FrameMouseWheel;
-  Image.OnMouseDown  := Self.FrameMouseDown;
-
   FSimulate := False;
 
   FCameraPosition  := TVector3D.Create(0.0, 0.0, 0.0);
+  FCameraFocusPanOffset := TVector3D.Create(0.0, 0.0, 0.0);
   FCameraSpeed     := 1.0;
   FCameraZoomLevel := 1.0;
 
@@ -94,15 +98,15 @@ begin
 
   RecalculateViewProjectionMatrix();
 
-  FFocusedSpaceObjectID := 0;
+  FSelectedSpaceObjectID := 0;
+  FFocused := False;
+
   FPlaybackSpeed := 1.0;
 
   FOrbitTrajectoryPathData := TPathData.Create();
 
   FPositionDictionary := TPositionDictionary.Create();
 end;
-
-{$Region Update functions}
 
 procedure TSimulationFrame.OnUpdate(fDeltaTime: float32);
 begin
@@ -117,24 +121,36 @@ begin
   Repaint();
 end;
 
+{$Region Update functions}
+
 procedure TSimulationFrame.UpdateCameraMovement(fDeltaTime: float32);
 begin
-  if FPositionDictionary.ContainsKey(FFocusedSpaceObjectID) then
-  begin
-    var SpaceObject: TSpaceObject := SpaceObjectFromID(FFocusedSpaceObjectID);
-    FCameraPosition.X := SpaceObject.PositionX;
-    FCameraPosition.Y := SpaceObject.PositionY;
-    RecalculateViewProjectionMatrix();
-    RecalculateGrid();
-  end;
+  var Pan:   boolean := IsMiddleMouseButtonDown();
+  var Focus: boolean := FPositionDictionary.ContainsKey(FSelectedSpaceObjectID) and FFocused;
 
-  if IsRightMouseButtonDown() then
-  begin
-    var WorldSpaceDelta: TVector3D := NDCToWorldSpace(FMouseDeltaNDC);
+  var WorldSpaceDelta: TVector3D := TVector3D.Zero;
 
+  if Pan then
+    WorldSpaceDelta := NDCToWorldSpace(FMouseDeltaNDC);
+
+  if Focus then
+  begin
+    var SpaceObject: TSpaceObject := SpaceObjectFromID(FSelectedSpaceObjectID);
+
+    FCameraFocusPanOffset.X := FCameraFocusPanOffset.X + WorldSpaceDelta.X;
+    FCameraFocusPanOffset.Y := FCameraFocusPanOffset.Y + WorldSpaceDelta.Y;
+
+    FCameraPosition.X := SpaceObject.PositionX - FCameraFocusPanOffset.X;
+    FCameraPosition.Y := SpaceObject.PositionY - FCameraFocusPanOffset.Y;
+  end else
+  begin
+    FCameraFocusPanOffset := TVector3D.Zero;
     FCameraPosition.X := FCameraPosition.X - WorldSpaceDelta.X;
     FCameraPosition.Y := FCameraPosition.Y - WorldSpaceDelta.Y;
+  end;
 
+  if Pan or Focus then
+  begin
     RecalculateViewProjectionMatrix();
     RecalculateGrid();
   end;
@@ -151,7 +167,7 @@ begin
       UpdateSpaceBodyPosition(fDeltaTime, i);
     end;
 
-    UpdateSpaceBodyRendering(i);
+    RecalculateSpaceBodyRendering(i);
   end;
 end;
 
@@ -192,7 +208,58 @@ begin
   GSpaceObjects[i].PositionY := GSpaceObjects[i].PositionY + GSpaceObjects[i].VelocityY * fDeltaTime;
 end;
 
-procedure TSimulationFrame.UpdateSpaceBodyRendering(i: int32);
+{$EndRegion}
+
+{$Region Rendering and Rendering Calculations}
+
+procedure TSimulationFrame.PaintToCanvas(var Canvas: TCanvas);
+begin
+  if FPositionDictionary.IsEmpty then
+    Exit;
+
+  Canvas.BeginScene();
+
+  Canvas.IntersectClipRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)));
+  Canvas.ClearRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)), TAlphaColors.Black);
+
+  // Draw grid
+
+  var GridBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
+  for var GridLine: TPair<TPointF, TPointF> in FGridLines do
+  begin
+    Canvas.DrawLine(GridLine.Key, GridLine.Value, 1.0, GridBrush);
+  end;
+  GridBrush.Destroy();
+
+  // Draw orbiral trajectory
+
+  var OrbitTrajectoryBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
+  Canvas.DrawPath(FOrbitTrajectoryPathData, 1.0, OrbitTrajectoryBrush);
+  OrbitTrajectoryBrush.Destroy();
+
+  // Draw space objects
+
+  var SpaceObjectBrush: TBrush := TBrush.Create(TBrushKind.Solid, TAlphaColors.Red);
+  for var spaceObj: TSpaceObject in GSpaceObjects do
+  begin
+    var rectf: TRectF := FPositionDictionary[spaceObj.ID];
+    Canvas.FillEllipse(rectf, 1.0, SpaceObjectBrush);
+  end;
+  SpaceObjectBrush.Destroy();
+
+  Canvas.EndScene();
+end;
+
+procedure TSimulationFrame.GenerateThumbnail(Path: string);
+begin
+  var Bitmap: TBitmap := TBitmap.Create(Round(Width), Round(Height));
+  //PaintToCanvas(Bitmap.Canvas);
+
+  Bitmap.SaveToFile(Path);
+  Bitmap.Destroy();
+end;
+
+procedure TSimulationFrame.RecalculateSpaceBodyRendering(i: int32);
 begin
   // Ensure space object exists in local registry
 
@@ -227,15 +294,6 @@ begin
 
   // Convert to Screen Space Coordinates
 
-  {var ScreenTopLeft: TPointF := TPointF.Create(
-    (NDCTopLeft.X + 1.0) * 0.5 * Width,
-    (1.0 - NDCTopLeft.Y) * 0.5 * Height
-  );
-
-  var ScreenBtmRight: TPointF := TPointF.Create(
-    (NDCBtmRight.X + 1.0) * 0.5 * Width,
-    (1.0 - NDCBtmRight.Y) * 0.5 * Height
-  );}
   var ScreenTopLeft:  TPointF := NDCToScreenCoords(NDCTopLeft);
   var ScreenBtmRight: TPointF := NDCToScreenCoords(NDCBtmRight);
 
@@ -243,17 +301,6 @@ begin
     TPointF.Create(ScreenTopLeft.X,  ScreenTopLeft.Y),
     TPointF.Create(ScreenBtmRight.X, ScreenBtmRight.Y)
   );
-end;
-
-{$EndRegion}
-
-procedure TSimulationFrame.GenerateThumbnail(Path: string);
-begin
-  var Bitmap: TBitmap := TBitmap.Create(Round(Width), Round(Height));
-  //PaintToCanvas(Bitmap.Canvas);
-
-  Bitmap.SaveToFile(Path);
-  Bitmap.Destroy();
 end;
 
 procedure TSimulationFrame.RecalculateViewProjectionMatrix();
@@ -391,43 +438,35 @@ begin
   FOrbitTrajectoryPathData.ClosePath();
 end;
 
-procedure TSimulationFrame.PaintToCanvas(var Canvas: TCanvas);
+{$EndRegion}
+
+{$Region Conversions}
+
+function TSimulationFrame.NDCToScreenCoords(NDC: TVector3D): TPointF;
 begin
-  if FPositionDictionary.IsEmpty then
-    Exit;
-
-  Canvas.BeginScene();
-
-  Canvas.IntersectClipRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)));
-  Canvas.ClearRect(TRectF.Create(TPointF.Zero, TPointF.Create(Width, Height)), TAlphaColors.Black);
-
-  // Draw grid
-
-  var GridBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
-  for var GridLine: TPair<TPointF, TPointF> in FGridLines do
-  begin
-    Canvas.DrawLine(GridLine.Key, GridLine.Value, 1.0, GridBrush);
-  end;
-  GridBrush.Destroy();
-
-  // Draw orbiral trajectory
-
-  var OrbitTrajectoryBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.DimGray);
-  Canvas.DrawPath(FOrbitTrajectoryPathData, 1.0, OrbitTrajectoryBrush);
-  OrbitTrajectoryBrush.Destroy();
-
-  // Draw space objects
-
-  var SpaceObjectBrush: TBrush := TBrush.Create(TBrushKind.Solid, TAlphaColors.Red);
-  for var spaceObj: TSpaceObject in GSpaceObjects do
-  begin
-    var rectf: TRectF := FPositionDictionary[spaceObj.ID];
-    Canvas.FillEllipse(rectf, 1.0, SpaceObjectBrush);
-  end;
-  SpaceObjectBrush.Destroy();
-
-  Canvas.EndScene();
+  Result := TPointF.Create(
+    (NDC.X + 1.0) * 0.5 * Width,
+    (1.0 - NDC.Y) * 0.5 * Height
+  );
 end;
+
+function TSimulationFrame.ScreenCoordsToNDC(ScreenX: float32; ScreenY: float32): TVector3D;
+begin
+  Result := TVector3D.Create(
+     (2.0 * ScreenX) / Width  - 0.0,
+    -(2.0 * ScreenY) / Height + 0.0,
+    0.0
+  );
+end;
+
+function TSimulationFrame.NDCToWorldSpace(NDC: TVector3D): TVector3D;
+begin
+  Result := NDC * FProjectionInverseMatrix;
+end;
+
+{$EndRegion}
+
+{$Region Events}
 
 procedure TSimulationFrame.FrameMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
 begin
@@ -485,32 +524,18 @@ begin
   end;
 end;
 
-function TSimulationFrame.NDCToScreenCoords(NDC: TVector3D): TPointF;
+procedure TSimulationFrame.FrameKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
 begin
-  Result := TPointF.Create(
-    (NDC.X + 1.0) * 0.5 * Width,
-    (1.0 - NDC.Y) * 0.5 * Height
-  );
-end;
+  Logger.Trace(KeyChar);
 
-function TSimulationFrame.ScreenCoordsToNDC(ScreenX: float32; ScreenY: float32): TVector3D;
-begin
-  Result := TVector3D.Create(
-     (2.0 * ScreenX) / Width  - 0.0,
-    -(2.0 * ScreenY) / Height + 0.0,
-    0.0
-  );
-end;
-
-function TSimulationFrame.NDCToWorldSpace(NDC: TVector3D): TVector3D;
-begin
-  Result := NDC * FProjectionInverseMatrix;
 end;
 
 procedure TSimulationFrame.ImagePaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
 begin
   PaintToCanvas(Canvas);
 end;
+
+{$EndRegion}
 
 {$R *.fmx}
 

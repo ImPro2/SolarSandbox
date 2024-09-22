@@ -8,7 +8,7 @@ uses
   Quick.Logger, Quick.Console, Quick.Logger.Provider.Console, Quick.Logger.Provider.Files,
   FMX.Objects, FMX.Controls.Presentation, FMX.Menus, Windows,
   Quick.YAML, Quick.YAML.Serializer,
-  ProjectInfo, SpaceObject, Scene, Simulation, Properties, PlayBar;
+  ProjectInfo, SpaceObject, Scene, Simulation, Properties, PlayBar, WindowsFunctions;
 
 type
   TGameFrame = class(TFrame)
@@ -54,6 +54,7 @@ type
     FSimulationFrame: TSimulationFrame;
 
   private
+    // Game events
     procedure OnGameStart();
     procedure OnGameStop();
     procedure OnGamePause();
@@ -62,19 +63,27 @@ type
     procedure OnSimulationSpaceObjectSelected(ID: uint32);
 
   public
+    // Init and update
     procedure Init(const ProjectInfo: TProjectInfo; NewProject: Boolean);
+    procedure Update(fDeltaTime: float32); // in s
+    procedure OnKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
+
+  private
     procedure InitFrames();
     procedure InitSpaceObjects();
-    procedure Update(fDeltaTime: float32); // in s
 
+    // Menubar impl
     procedure SaveProject();
     procedure SaveProjectAs();
     procedure OpenProject();
 
+  public
     property Initialized: Boolean read FInitialized;
   end;
 
 implementation
+
+{$Region Initialization and Update}
 
 constructor TGameFrame.Create(AOwner: TComponent);
 begin
@@ -141,29 +150,36 @@ begin
   FSimulationFrame.OnUpdate(fDeltaTime);
 end;
 
+procedure TGameFrame.OnKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
+begin
+  case KeyChar of
+    'f': FSimulationFrame.Focused := not FSimulationFrame.Focused;
+  end;
+end;
+
+{$EndRegion}
+
+{$Region Game Events}
+
 procedure TGameFrame.OnGameStart();
 begin
-  Logger.Info('Game Start');
   FSimulationFrame.Simulate := True;
   FProjectInfo.SpaceObjects := Copy(GSpaceObjects, 0, Length(GSpaceObjects));
 end;
 
 procedure TGameFrame.OnGameStop();
 begin
-  Logger.Info('Game Stop');
   GSpaceObjects := Copy(FProjectInfo.SpaceObjects, 0, Length(FProjectInfo.SpaceObjects));
   FSimulationFrame.Simulate := False;
 end;
 
 procedure TGameFrame.OnGamePause();
 begin
-  Logger.Info('Game Pause');
   FSimulationFrame.Simulate := False;
 end;
 
 procedure TGameFrame.OnGameResume();
 begin
-  Logger.Info('Game Resume');
   FSimulationFrame.Simulate := True;
 end;
 
@@ -175,7 +191,12 @@ end;
 procedure TGameFrame.OnSimulationSpaceObjectSelected(ID: uint32);
 begin
   FSceneFrame.SelectedSpaceObjectID := ID;
+  FSimulationFrame.SelectedSpaceObjectID := ID;
 end;
+
+{$EndRegion Game Events}
+
+{$Region Menubar Functions}
 
 procedure TGameFrame.SaveProject();
 begin
@@ -217,6 +238,10 @@ begin
   GSpaceObjects := Copy(FProjectInfo.SpaceObjects, 0, Length(FProjectInfo.SpaceObjects));
 end;
 
+{$EndRegion}
+
+{$Region Events}
+
 procedure TGameFrame.miFileCloseClick(Sender: TObject);
 begin
   FMainForm.Close();
@@ -236,6 +261,8 @@ procedure TGameFrame.miFileSaveClick(Sender: TObject);
 begin
   SaveProject();
 end;
+
+{$EndRegion}
 
 {$R *.fmx}
 

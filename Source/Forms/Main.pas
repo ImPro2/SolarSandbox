@@ -12,6 +12,8 @@ type
   TMainForm = class(TForm)
     StyleBook: TStyleBook;
     procedure FormCreate(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar;
+      Shift: TShiftState);
   private
     FLastTime: int64;
     FSecondsPerCount: float32;
@@ -82,6 +84,11 @@ begin
   begin
     frmGame.Update(fDeltaTime);
   end;
+end;
+
+procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
+begin
+  frmGame.OnKeyDown(Sender, Key, KeyChar, Shift);
 end;
 
 procedure TMainForm.OnAppIdle(Sender: TObject; var Done: Boolean);

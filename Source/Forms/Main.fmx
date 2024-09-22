@@ -10,6 +10,7 @@ object MainForm: TMainForm
   FormFactor.Devices = [Desktop]
   ShowFullScreenIcon = True
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   DesignerMasterStyle = 0
   object StyleBook: TStyleBook
     Styles = <
