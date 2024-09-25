@@ -20,7 +20,7 @@ type
   TViewGridEvent = procedure() of object;
   THideGridevent = procedure() of object;
 
-  TViewOrbitTrajectoryEvent = procedure() of object;
+  TViewOrbitTrajectoryEvent = procedure(Relative: boolean) of object;
   THideOrbitTrajectoryEvent = procedure() of object;
 
   TPlayBarFrame = class(TFrame)
@@ -34,16 +34,19 @@ type
     pnlRight: TPanel;
     nbPlaybackSpeed: TNumberBox;
     lblPlaybackSpeed: TLabel;
-    btnViewOrbit: TSpeedButton;
+    btnViewRelativeOrbit: TSpeedButton;
     imgViewOrbit: TImage;
     btnViewGrid: TSpeedButton;
     nbOrbitCalcStepCount: TNumberBox;
     lblOrbitCalcStepCount: TLabel;
     pnlOrbitCalcStep: TPanel;
+    btnViewAbsoluteOrbit: TSpeedButton;
+    pnlViewOrbit: TPanel;
+    imgViewAbsoluteOrbit: TImage;
     procedure pnlPlayStopClick(Sender: TObject);
     procedure pnlPauseResumeClick(Sender: TObject);
     procedure nbPlaybackSpeedChange(Sender: TObject);
-    procedure btnViewOrbitClick(Sender: TObject);
+    procedure btnViewRelativeOrbitClick(Sender: TObject);
     procedure btnViewGridClick(Sender: TObject);
     procedure pnlPlayStopMouseEnter(Sender: TObject);
     procedure pnlPlayStopMouseLeave(Sender: TObject);
@@ -51,11 +54,14 @@ type
     procedure pnlPauseResumeMouseEnter(Sender: TObject);
     procedure pnlPauseResumeMouseLeave(Sender: TObject);
     procedure btnViewGridMouseLeave(Sender: TObject);
-    procedure btnViewOrbitMouseEnter(Sender: TObject);
-    procedure btnViewOrbitMouseLeave(Sender: TObject);
+    procedure btnViewRelativeOrbitMouseEnter(Sender: TObject);
+    procedure btnViewRelativeOrbitMouseLeave(Sender: TObject);
     procedure nbOrbitCalcStepCountChange(Sender: TObject);
     procedure pnlOrbitCalcStepMouseEnter(Sender: TObject);
     procedure pnlOrbitCalcStepMouseLeave(Sender: TObject);
+    procedure btnViewAbsoluteOrbitClick(Sender: TObject);
+    procedure btnViewAbsoluteOrbitMouseEnter(Sender: TObject);
+    procedure btnViewAbsoluteOrbitMouseLeave(Sender: TObject);
 
   public
     OnGameStart:  TGameStartEvent;
@@ -75,7 +81,7 @@ type
     procedure Init();
 
   private
-    FPlay, FPause, FViewGrid, FViewOrbit: boolean;
+    FPlay, FPause, FViewGrid, FViewRelativeOrbit, FViewAbsoluteOrbit: boolean;
     FPopup: TPopup;
     FCalloutPanel: TCalloutPanel;
     FTooltipLabel: TLabel;
@@ -93,7 +99,9 @@ begin
   FPlay      := False;
   FPause     := False;
   FViewGrid  := True;
-  FViewOrbit := False;
+
+  FViewRelativeOrbit := False;
+  FViewAbsoluteOrbit := False;
 
   FPopup := TPopup.Create(Self);
   FPopup.Placement := TPlacement.Center;
@@ -162,12 +170,22 @@ begin
   HideTooltip();
 end;
 
-procedure TPlayBarFrame.btnViewOrbitMouseEnter(Sender: TObject);
+procedure TPlayBarFrame.btnViewRelativeOrbitMouseEnter(Sender: TObject);
 begin
-  ShowTooltip('View Orbital Trajectory', btnViewOrbit);
+  ShowTooltip('View Relative Orbital Trajectory', btnViewRelativeOrbit);
 end;
 
-procedure TPlayBarFrame.btnViewOrbitMouseLeave(Sender: TObject);
+procedure TPlayBarFrame.btnViewRelativeOrbitMouseLeave(Sender: TObject);
+begin
+  HideTooltip();
+end;
+
+procedure TPlayBarFrame.btnViewAbsoluteOrbitMouseEnter(Sender: TObject);
+begin
+  ShowTooltip('View Absolute Orbital Trajectory', btnViewAbsoluteOrbit);
+end;
+
+procedure TPlayBarFrame.btnViewAbsoluteOrbitMouseLeave(Sender: TObject);
 begin
   HideTooltip();
 end;
@@ -246,19 +264,39 @@ begin
   FViewGrid := not FViewGrid;
 end;
 
-procedure TPlayBarFrame.btnViewOrbitClick(Sender: TObject);
+procedure TPlayBarFrame.btnViewRelativeOrbitClick(Sender: TObject);
 begin
-  if not FViewOrbit then
+  if not FViewRelativeOrbit then
   begin
+    FViewAbsoluteOrbit := False;
+    btnViewAbsoluteOrbit.IsPressed := False;
+
     if Assigned(OnViewOrbitTrajectory) then
-      OnViewOrbitTrajectory();
+      OnViewOrbitTrajectory(True);
   end else
   begin
     if Assigned(OnHideOrbitTrajectory) then
       OnHideOrbitTrajectory();
   end;
 
-  FViewOrbit := not FViewOrbit;
+  FViewRelativeOrbit := not FViewRelativeOrbit;
+end;
+
+
+procedure TPlayBarFrame.btnViewAbsoluteOrbitClick(Sender: TObject);
+begin
+  if not FViewAbsoluteOrbit then
+  begin
+    FViewRelativeOrbit := False;
+    btnViewRelativeOrbit.IsPressed := False;
+
+    if Assigned(OnViewOrbitTrajectory) then
+      OnViewOrbitTrajectory(False);
+  end else
+  begin
+    if Assigned(OnHideOrbitTrajectory) then
+      OnHideOrbitTrajectory();
+  end;
 end;
 
 {$EndRegion}

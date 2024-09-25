@@ -1,6 +1,6 @@
 object PlayBarFrame: TPlayBarFrame
   Align = Client
-  Size.Width = 696.000000000000000000
+  Size.Width = 686.000000000000000000
   Size.Height = 26.000000000000000000
   Size.PlatformDefault = False
   object pnlLeft: TPanel
@@ -2814,44 +2814,16 @@ object PlayBarFrame: TPlayBarFrame
   object pnlRight: TPanel
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 378.000000000000000000
-    Size.Width = 318.000000000000000000
+    Size.Width = 308.000000000000000000
     Size.Height = 26.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
-    object btnViewOrbit: TSpeedButton
-      StaysPressed = True
-      Align = FitRight
-      Margins.Left = 2.000000000000000000
-      Margins.Top = 2.000000000000000000
-      Margins.Right = 8.000000000000000000
-      Margins.Bottom = 2.000000000000000000
-      Position.X = 287.581970214843800000
-      Position.Y = 2.000000000000000000
-      Size.Width = 22.418029785156250000
-      Size.Height = 22.000000000000000000
-      Size.PlatformDefault = False
-      Text = 'O'
-      TextSettings.Trimming = None
-      OnClick = btnViewOrbitClick
-      OnMouseEnter = btnViewOrbitMouseEnter
-      OnMouseLeave = btnViewOrbitMouseLeave
-      object imgViewOrbit: TImage
-        MultiResBitmap = <
-          item
-          end>
-        Align = Client
-        HitTest = False
-        Size.Width = 22.418029785156250000
-        Size.Height = 22.000000000000000000
-        Size.PlatformDefault = False
-      end
-    end
     object btnViewGrid: TSpeedButton
       StaysPressed = True
       Anchors = [akTop, akRight, akBottom]
       AutoTranslate = False
       IsPressed = True
-      Position.X = 259.000000000000000000
+      Position.X = 216.000000000000000000
       Position.Y = 2.000000000000000000
       Size.Width = 22.000000000000000000
       Size.Height = 22.000000000000000000
@@ -2861,6 +2833,67 @@ object PlayBarFrame: TPlayBarFrame
       OnClick = btnViewGridClick
       OnMouseEnter = btnViewGridMouseEnter
       OnMouseLeave = btnViewGridMouseLeave
+    end
+    object pnlViewOrbit: TPanel
+      Anchors = [akTop, akRight, akBottom]
+      Position.X = 246.000000000000000000
+      Size.Width = 64.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object btnViewAbsoluteOrbit: TSpeedButton
+        StaysPressed = True
+        Anchors = [akTop, akRight, akBottom]
+        AutoTranslate = False
+        Position.X = 34.000000000000000000
+        Position.Y = 2.000000000000000000
+        Size.Width = 22.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'A'
+        TextSettings.Trimming = None
+        OnClick = btnViewAbsoluteOrbitClick
+        OnMouseEnter = btnViewAbsoluteOrbitMouseEnter
+        OnMouseLeave = btnViewAbsoluteOrbitMouseLeave
+        object imgViewAbsoluteOrbit: TImage
+          MultiResBitmap = <
+            item
+            end>
+          Align = Client
+          HitTest = False
+          Size.Width = 22.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
+      end
+      object btnViewRelativeOrbit: TSpeedButton
+        StaysPressed = True
+        Anchors = [akTop, akRight, akBottom]
+        Margins.Left = 2.000000000000000000
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 8.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Position.X = 8.000000000000000000
+        Position.Y = 2.000000000000000000
+        Size.Width = 22.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'R'
+        TextSettings.Trimming = None
+        OnClick = btnViewRelativeOrbitClick
+        OnMouseEnter = btnViewRelativeOrbitMouseEnter
+        OnMouseLeave = btnViewRelativeOrbitMouseLeave
+        object imgViewOrbit: TImage
+          MultiResBitmap = <
+            item
+            end>
+          Align = Client
+          HitTest = False
+          Size.Width = 22.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
+      end
     end
   end
   object pnlOrbitCalcStep: TPanel

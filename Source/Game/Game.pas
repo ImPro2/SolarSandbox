@@ -63,7 +63,7 @@ type
     procedure OnOrbitTrajectoryCalculationStepCountChanged(StepCount: int32);
     procedure OnViewGrid();
     procedure OnHideGrid();
-    procedure OnViewOrbitTrajectory();
+    procedure OnViewOrbitTrajectory(Relative: boolean);
     procedure OnHideOrbitTrajectory();
     procedure OnSimulationSpaceObjectSelected(ID: uint32);
 
@@ -217,14 +217,23 @@ begin
   FSimulationFrame.ViewGrid := False;
 end;
 
-procedure TGameFrame.OnViewOrbitTrajectory();
+procedure TGameFrame.OnViewOrbitTrajectory(Relative: boolean);
 begin
-  FSimulationFrame.ViewOrbitTrajectory := True;
+  if Relative then
+  begin
+    FSimulationFrame.ViewRelativeOrbitTrajectory := True;
+    FSimulationFrame.ViewAbsoluteOrbitTrajectory := False;
+  end else
+  begin
+    FSimulationFrame.ViewRelativeOrbitTrajectory := False;
+    FSimulationFrame.ViewAbsoluteOrbitTrajectory := True;
+  end;
 end;
 
 procedure TGameFrame.OnHideOrbitTrajectory();
 begin
-  FSimulationFrame.ViewOrbitTrajectory := False;
+  FSimulationFrame.ViewRelativeOrbitTrajectory := False;
+  FSimulationFrame.ViewAbsoluteOrbitTrajectory := False;
 end;
 
 procedure TGameFrame.OnSimulationSpaceObjectSelected(ID: uint32);
