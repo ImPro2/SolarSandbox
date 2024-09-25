@@ -12,6 +12,7 @@ type
     ID: uint64;
 
     constructor Create(sName: string);
+    function RadiusFromMass(): float32;
   end;
 
   TSpaceObjectList = array of TSpaceObject;
@@ -29,6 +30,11 @@ begin
   Name := sName;
   ID   := Random(MaxLongInt);
   Mass := 10;
+end;
+
+function TSpaceObject.RadiusFromMass(): float32;
+begin
+  Result := Mass * 0.1 * 0.5;
 end;
 
 function SpaceObjectFromID(ID: uint32): TSpaceObject;

@@ -66,11 +66,14 @@ type
     // Update functions
     procedure UpdateCameraMovement(fDeltaTime: float32);
     procedure UpdateSpaceBodies(fDeltaTime: float32);
-    procedure UpdateSpaceBodyPosition(fDeltaTime: float32; i: int32);
+    function  CalculateGravitationalForce(const SpaceObject: TSpaceObject): TPointF;
+    procedure ApplyForceToSpaceBody(var SpaceObject: TSpaceObject; ForceX, ForceY: float32; fDeltaTime: float32);
+    procedure CalculateCollision(var SpaceObject1, SpaceObject2: TSpaceObject; fDeltaTime: float32);
 
     // Rendering and Rendering Calculations
     procedure PaintToCanvas(var Canvas: TCanvas);
-    procedure RecalculateSpaceBodyRendering(i: int32);
+    procedure RecalculateSpaceBodyRendering(const [ref] SpaceObject: TSpaceObject);
+    function  IsColliding(SpaceBody1, SpaceBody2: TSpaceObject): boolean;
     procedure RecalculateViewProjectionMatrix();
     procedure RecalculateGrid();
     procedure RecalculateOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32; AttractorID: uint32);
@@ -172,20 +175,52 @@ end;
 
 procedure TSimulationFrame.UpdateSpaceBodies(fDeltaTime: float32);
 begin
-  for var i: int32 := 0 to Length(GSpaceObjects) - 1 do
+  if FSimulate then
   begin
-    if FSimulate then
+    // Movement
+
+    for var i: int32 := 0 to Length(GSpaceObjects) - 1 do
     begin
-      UpdateSpaceBodyPosition(fDeltaTime, i);
+      var SpaceObject: TSpaceObject := GSpaceObjects[i];
+
+      var Force: TPointF := CalculateGravitationalForce(SpaceObject);
+      ApplyForceToSpaceBody(SpaceObject, Force.X, Force.Y, fDeltaTime);
+
+      GSpaceObjects[i] := SpaceObject;
     end;
 
-    RecalculateSpaceBodyRendering(i);
+    // Collision
+
+    for var i: int32 := 0 to Length(GSpaceObjects) - 1 do
+    begin
+      for var j: int32 := i to Length(GSpaceObjects) - 1 do
+      begin
+        var SpaceObject1: TSpaceObject := GSpaceObjects[i];
+        var SpaceObject2: TSpaceObject := GSpaceObjects[j];
+
+        if SpaceObject1.ID = SpaceObject2.ID then continue;
+
+        if IsColliding(SpaceObject1, SpaceObject2) then
+        begin
+          CalculateCollision(SpaceObject1, SpaceObject2, fDeltaTime);
+        end;
+
+        GSpaceObjects[i] := SpaceObject1;
+        GSpaceObjects[j] := SpaceObject2;
+      end;
+    end;
+  end;
+
+  // Rendering
+
+  for var SpaceObject: TSpaceObject in GSpaceObjects do
+  begin
+    RecalculateSpaceBodyRendering(SpaceObject);
   end;
 end;
 
-procedure TSimulationFrame.UpdateSpaceBodyPosition(fDeltaTime: float32; i: int32);
-const
-  G = 1;
+function TSimulationFrame.CalculateGravitationalForce(const SpaceObject: TSpaceObject): TPointF;
+const G = 1.0;
 begin
   // Newton's Law of Gravitation
   // F = G * m1 * m2 / r^2
@@ -193,31 +228,56 @@ begin
   var ForceX: float32 := 0;
   var ForceY: float32 := 0;
 
-  for var spaceObj in GSpaceObjects do
+  for var OtherSpaceObject in GSpaceObjects do
   begin
-    if spaceObj.ID = GSpaceObjects[i].ID then
-      continue;
+    if SpaceObject.ID = OtherSpaceobject.ID then continue;
 
-    var dx: float32 := spaceObj.PositionX - GSpaceObjects[i].PositionX;
-    var dy: float32 := spaceObj.PositionY - GSpaceObjects[i].PositionY;
+    var dx: float32 := OtherSpaceObject.PositionX - SpaceObject.PositionX;
+    var dy: float32 := OtherSpaceObject.PositionY - SpaceObject.PositionY;
 
     var DistanceSquared := dx * dx + dy * dy;
 
-    var Force: float32 := G * GSpaceObjects[i].Mass * spaceObj.Mass / DistanceSquared;
+    var Force: float32 := G * OtherSpaceObject.Mass * SpaceObject.Mass / DistanceSquared;
     var Angle: float32 := ArcTan2(dy, dx);
 
     ForceX := ForceX + Force * Cos(Angle);
     ForceY := ForceY + Force * Sin(Angle);
   end;
 
-  var AccelerationX: float32 := ForceX / GSpaceObjects[i].Mass;
-  var AccelerationY: float32 := ForceY / GSpaceObjects[i].Mass;
+  Result := TPointF.Create(ForceX, ForceY);
+end;
 
-  GSpaceObjects[i].VelocityX := GSpaceObjects[i].VelocityX + AccelerationX * fDeltaTime;
-  GSpaceObjects[i].VelocityY := GSpaceObjects[i].VelocityY + AccelerationY * fDeltaTime;
+procedure TSimulationFrame.ApplyForceToSpaceBody(var SpaceObject: TSpaceObject; ForceX, ForceY: float32; fDeltaTime: float32);
+begin
+  var AccelerationX: float32 := ForceX / SpaceObject.Mass;
+  var AccelerationY: float32 := ForceY / SpaceObject.Mass;
 
-  GSpaceObjects[i].PositionX := GSpaceObjects[i].PositionX + GSpaceObjects[i].VelocityX * fDeltaTime;
-  GSpaceObjects[i].PositionY := GSpaceObjects[i].PositionY + GSpaceObjects[i].VelocityY * fDeltaTime;
+  SpaceObject.VelocityX := SpaceObject.VelocityX + AccelerationX * fDeltaTime;
+  SpaceObject.VelocityY := SpaceObject.VelocityY + AccelerationY * fDeltaTime;
+
+  SpaceObject.PositionX := SpaceObject.PositionX + SpaceObject.VelocityX * fDeltaTime;
+  SpaceObject.PositionY := SpaceObject.PositionY + SpaceObject.VelocityY * fDeltaTime;
+end;
+
+procedure TSimulationFrame.CalculateCollision(var SpaceObject1, SpaceObject2: TSpaceObject; fDeltaTime: float32);
+begin
+  var m1:  float32 := SpaceObject1.Mass;
+  var m2:  float32 := SpaceObject2.Mass;
+  var v1x: float32 := SpaceObject1.VelocityX;
+  var v1y: float32 := SpaceObject1.VelocityY;
+  var v2x: float32 := SpaceObject2.VelocityX;
+  var v2y: float32 := SpaceObject2.VelocityY;
+
+  SpaceObject1.VelocityX := v1x * (m1 - m2) / (m1 + m2) + v2x * (2 * m2) / (m1 + m2);
+  SpaceObject1.VelocityY := v1y * (m1 - m2) / (m1 + m2) + v2y * (2 * m2) / (m1 + m2);
+
+  SpaceObject2.VelocityX := v1x * (2 * m1) / (m1 + m2) + v2x * (m2 - m1) / (m1 + m2);
+  SpaceObject2.VelocityY := v1y * (2 * m1) / (m1 + m2) + v2y * (m2 - m1) / (m1 + m2);
+
+  SpaceObject1.PositionX := SpaceObject1.PositionX + SpaceObject1.VelocityX * fDeltaTime;
+  SpaceObject1.PositionY := SpaceObject1.PositionY + SpaceObject1.VelocityY * fDeltaTime;
+  SpaceObject2.PositionX := SpaceObject2.PositionX + SpaceObject2.VelocityX * fDeltaTime;
+  SpaceObject2.PositionY := SpaceObject2.PositionY + SpaceObject2.VelocityY * fDeltaTime;
 end;
 
 {$EndRegion}
@@ -285,12 +345,12 @@ begin
   Bitmap.Destroy();
 end;
 
-procedure TSimulationFrame.RecalculateSpaceBodyRendering(i: int32);
+procedure TSimulationFrame.RecalculateSpaceBodyRendering(const [ref] SpaceObject: TSpaceObject);
 begin
   // Ensure space object exists in local registry
 
-  if not FPositionDictionary.ContainsKey(GSpaceObjects[i].ID) then
-    FPositionDictionary.Add(GSpaceObjects[i].ID, TRectF.Create(TPointF.Zero));
+  if not FPositionDictionary.ContainsKey(SpaceObject.ID) then
+    FPositionDictionary.Add(SpaceObject.ID, TRectF.Create(TPointF.Zero));
 
   // stuff
 
@@ -298,14 +358,14 @@ begin
   var LocalBtmRight: TVector3D := TVector3D.Create( 0.5, -0.5, 0.0);
 
   var Position: TVector3D := TVector3D.Create(
-    GSpaceObjects[i].PositionX,
-    GSpaceObjects[i].PositionY,
+    SpaceObject.PositionX,
+    SpaceObject.PositionY,
     0.0
   );
 
   var Scale: TPoint3D := TPoint3D.Create(
-    GSpaceObjects[i].Mass * 0.1,
-    GSpaceObjects[i].Mass * 0.1,
+    SpaceObject.RadiusFromMass() * 2,
+    SpaceObject.RadiusFromMass() * 2,
     0.0
   );
 
@@ -323,10 +383,27 @@ begin
   var ScreenTopLeft:  TPointF := NDCToScreenCoords(NDCTopLeft);
   var ScreenBtmRight: TPointF := NDCToScreenCoords(NDCBtmRight);
 
-  FPositionDictionary[GSpaceObjects[i].ID] := TRectF.Create(
+  FPositionDictionary[SpaceObject.ID] := TRectF.Create(
     TPointF.Create(ScreenTopLeft.X,  ScreenTopLeft.Y),
     TPointF.Create(ScreenBtmRight.X, ScreenBtmRight.Y)
   );
+end;
+
+function TSimulationFrame.IsColliding(SpaceBody1: TSpaceObject; SpaceBody2: TSpaceObject): boolean;
+begin
+  var dx: float32 := SpaceBody1.PositionX - SpaceBody2.PositionX;
+  var dy: float32 := SpaceBody1.PositionY - SpaceBody2.PositionY;
+  var DistSq: float32 := dx * dx + dy * dy;
+  var Radius1: float32 := SpaceBody1.RadiusFromMass();
+  var Radius2: float32 := SpaceBody2.RadiusFromMass();
+
+  if DistSq <= (Radius1 + Radius2) * (Radius1 + Radius2) then
+  begin
+    Result := True;
+  end else
+  begin
+    Result := False;
+  end;
 end;
 
 procedure TSimulationFrame.RecalculateViewProjectionMatrix();
@@ -404,7 +481,7 @@ procedure TSimulationFrame.RecalculateOrbitTrajectory(fDeltaTime: float32; Space
 begin
   if not FViewOrbitTrajectory then Exit;
 
-  SetLength(FOrbitTrajectoryData, FOrbitTrajectoryCalculationStepCount);
+  Delete(FOrbitTrajectoryData, 0, Length(FOrbitTrajectoryData));
 
   // TODO: Find attractor ID for every space object :(
   var SpaceObject: TSpaceObject := SpaceObjectFromID(SpaceObjectID);
@@ -413,30 +490,20 @@ begin
   var G: float32 := 1.0;
   fDeltaTime := fDeltaTime * 5;
 
-  var PositionX: float32 := SpaceObject.PositionX;
-  var PositionY: float32 := SpaceObject.PositionY;
-  var VelocityX: float32 := SpaceObject.VelocityX;
-  var VelocityY: float32 := SpaceObject.VelocityY;
-
-  var AttractorPositionX: float32 := Attractor.PositionX;
-  var AttractorPositionY: float32 := Attractor.PositionY;
-  var AttractorVelocityX: float32 := Attractor.VelocityX;
-  var AttractorVelocityY: float32 := Attractor.VelocityY;
-
   var LastPoint: TPointF := TPointF.Zero;
 
   begin
-    var NDC: TVector3D := TVector3D.Create(PositionX, PositionY, 0.0) * FViewProjectionMatrix;
+    var NDC: TVector3D := TVector3D.Create(SpaceObject.PositionX, SpaceObject.PositionY, 0.0) * FViewProjectionMatrix;
     var ScreenCoords: TPointF := NDCToScreenCoords(NDC);
     LastPoint := ScreenCoords;
   end;
 
-  for var i: int32 := 0 to Length(FOrbitTrajectoryData) - 1 do
+  for var i: int32 := 0 to FOrbitTrajectoryCalculationStepCount - 1 do
   begin
     // Calculate gravitational force
 
-    var dx: float32 := AttractorPositionX - PositionX;
-    var dy: float32 := AttractorPositionY - PositionY;
+    var dx: float32 := Attractor.PositionX - SpaceObject.PositionX;
+    var dy: float32 := Attractor.PositionY - SpaceObject.PositionY;
 
     var DistanceSquared := dx * dx + dy * dy;
 
@@ -448,33 +515,36 @@ begin
 
     // Calculate world position
 
-    var AccelerationX: float32 := ForceX / SpaceObject.Mass;
+    {var AccelerationX: float32 := ForceX / SpaceObject.Mass;
     var AccelerationY: float32 := ForceY / SpaceObject.Mass;
 
-    VelocityX := VelocityX + AccelerationX * fDeltaTime;
-    VelocityY := VelocityY + AccelerationY * fDeltaTime;
+    SpaceObject.VelocityX := SpaceObject.VelocityX + AccelerationX * fDeltaTime;
+    SpaceObject.VelocityY := SpaceObject.VelocityY + AccelerationY * fDeltaTime;
 
-    PositionX := PositionX + VelocityX * fDeltaTime;
-    PositionY := PositionY + VelocityY * fDeltaTime;
+    SpaceObject.PositionX := SpaceObject.PositionX + SpaceObject.VelocityX * fDeltaTime;
+    SpaceObject.PositionY := SpaceObject.PositionY + SpaceObject.VelocityY * fDeltaTime;
 
     var AttractorAccelerationX: float32 := -ForceX / Attractor.Mass;
     var AttractorAccelerationY: float32 := -ForceY / Attractor.Mass;
 
-    AttractorVelocityX := AttractorVelocityX + AttractorAccelerationX * fDeltaTime;
-    AttractorVelocityY := AttractorVelocityY + AttractorAccelerationY * fDeltaTime;
+    Attractor.VelocityX := Attractor.VelocityX + AttractorAccelerationX * fDeltaTime;
+    Attractor.VelocityY := Attractor.VelocityY + AttractorAccelerationY * fDeltaTime;
 
-    AttractorPositionX := AttractorPositionX + AttractorVelocityX * fDeltaTime;
-    AttractorPositionY := AttractorPositionY + AttractorVelocityY * fDeltaTime;
+    Attractor.PositionX := Attractor.PositionX + Attractor.VelocityX * fDeltaTime;
+    Attractor.PositionY := Attractor.PositionY + Attractor.VelocityY * fDeltaTime;}
+
+    ApplyForceToSpaceBody(SpaceObject, ForceX, ForceY, fDeltaTime);
+    ApplyForceToSpaceBody(Attractor, -ForceX, -ForceY, fDeltaTime);
 
     // Calculate screen coords
 
-    var NDC: TVector3D := TVector3D.Create(PositionX, PositionY, 0.0) * FViewProjectionMatrix;
+    var NDC: TVector3D := TVector3D.Create(SpaceObject.PositionX, SpaceObject.PositionY, 0.0) * FViewProjectionMatrix;
     var ScreenCoords: TPointF := NDCToScreenCoords(NDC);
 
-    FOrbitTrajectoryData[i] := TPair<TPointF, TPointF>.Create(LastPoint, ScreenCoords);
+    FOrbitTrajectoryData := FOrbitTrajectoryData + [TPair<TPointF, TPointF>.Create(LastPoint, ScreenCoords)];
     LastPoint := ScreenCoords;
-    //FOrbitTrajectoryPathData.LineTo(ScreenCoords);
-    //FOrbitTrajectoryPathData.MoveTo(ScreenCoords);
+
+    if IsColliding(SpaceObject, Attractor) then break;
   end;
 
   //FOrbitTrajectoryPathData.ClosePath();
