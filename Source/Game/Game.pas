@@ -157,7 +157,8 @@ procedure TGameFrame.Update(fDeltaTime: float32);
 begin
   FSceneFrame.OnUpdate();
   FPropertiesFrame.OnUpdate(FSceneFrame.SelectedSpaceObjectID);
-  FSimulationFrame.OnUpdate(fDeltaTime);
+  //FSimulationFrame.OnUpdate(fDeltaTime);
+  FSimulationFrame.onUpdate(0.005);
 end;
 
 procedure TGameFrame.OnKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);

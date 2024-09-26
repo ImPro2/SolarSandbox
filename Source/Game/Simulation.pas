@@ -66,7 +66,7 @@ type
     // Update functions
     procedure UpdateCameraMovement(fDeltaTime: float32);
     procedure UpdateSpaceBodies(fDeltaTime: float32);
-    function  CalculateGravitationalForce(const SpaceObject: TSpaceObject): TPointF;
+    function  CalculateGravitationalForce(const [ref] SpaceObject: TSpaceObject; const [ref] SpaceObjectList: TSpaceObjectList): TPointF;
     procedure ApplyForceToSpaceBody(var SpaceObject: TSpaceObject; ForceX, ForceY: float32; fDeltaTime: float32);
     procedure CalculateCollision(var SpaceObject1, SpaceObject2: TSpaceObject; fDeltaTime: float32);
 
@@ -76,7 +76,7 @@ type
     function  IsColliding(SpaceBody1, SpaceBody2: TSpaceObject): boolean;
     procedure RecalculateViewProjectionMatrix();
     procedure RecalculateGrid();
-    procedure RecalculateAbsoluteOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32; AttractorID: uint32);
+    procedure RecalculateAbsoluteOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32);
 
     // Conversions
     function NDCToScreenCoords(NDC: TVector3D): TPointF;
@@ -133,8 +133,7 @@ begin
   UpdateSpaceBodies(DeltaTimeWithPlaybackSpeed);
 
   // Temporary
-  //RecalculateRelativeOrbitTrajectory(fDeltaTime, GSpaceObjects[1].ID, GSpaceObjects[0].ID);
-  RecalculateAbsoluteOrbitTrajectory(fDeltaTime, GSpaceObjects[1].ID, GSpaceObjects[0].ID);
+  RecalculateAbsoluteOrbitTrajectory(fDeltaTime, FSelectedSpaceObjectID);
 
   Repaint();
 end;
@@ -186,7 +185,7 @@ begin
     begin
       var SpaceObject: TSpaceObject := GSpaceObjects[i];
 
-      var Force: TPointF := CalculateGravitationalForce(SpaceObject);
+      var Force: TPointF := CalculateGravitationalForce(SpaceObject, GSpaceObjects);
       ApplyForceToSpaceBody(SpaceObject, Force.X, Force.Y, fDeltaTime);
 
       GSpaceObjects[i] := SpaceObject;
@@ -222,7 +221,7 @@ begin
   end;
 end;
 
-function TSimulationFrame.CalculateGravitationalForce(const SpaceObject: TSpaceObject): TPointF;
+function TSimulationFrame.CalculateGravitationalForce(const [ref] SpaceObject: TSpaceObject; const [ref] SpaceObjectList: TSpaceObjectList): TPointF;
 const G = 1.0;
 begin
   // Newton's Law of Gravitation
@@ -231,7 +230,7 @@ begin
   var ForceX: float32 := 0;
   var ForceY: float32 := 0;
 
-  for var OtherSpaceObject in GSpaceObjects do
+  for var OtherSpaceObject in SpaceObjectList do
   begin
     if SpaceObject.ID = OtherSpaceobject.ID then continue;
 
@@ -480,20 +479,17 @@ begin
   end;
 end;
 
-procedure TSimulationFrame.RecalculateAbsoluteOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32; AttractorID: uint32);
+procedure TSimulationFrame.RecalculateAbsoluteOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32);
 begin
   if not (FViewAbsoluteOrbitTrajectory or FViewRelativeOrbitTrajectory) then Exit;
 
   Delete(FOrbitTrajectoryData, 0, Length(FOrbitTrajectoryData));
 
-  // TODO: Find attractor ID for every space object :(
   var SpaceObject: TSpaceObject := SpaceObjectFromID(SpaceObjectID);
-  var Attractor:   TSpaceObject := SpaceObjectFromID(AttractorID);
 
   var SpaceObjectsCopy: TSpaceObjectList := Copy(GSpaceObjects, 0, Length(GSpaceObjects));
 
   var G: float32 := 1.0;
-  fDeltaTime := fDeltaTime * 5;
 
   var LastPoint: TPointF := NDCToScreenCoords(TVector3D.Create(SpaceObject.PositionX, SpaceObject.PositionY, 0.0) * FViewProjectionMatrix);
 
@@ -504,7 +500,7 @@ begin
     begin
       for var j := 0 to Length(SpaceObjectsCopy) - 1 do
       begin
-        var OtherSpaceObject: TSpaceObject := SpaceObjectsCopy[j];
+        {var OtherSpaceObject: TSpaceObject := SpaceObjectsCopy[j];
 
         if OtherSpaceObject.ID = SpaceObject.ID then continue;
 
@@ -517,22 +513,35 @@ begin
         var Angle: float32 := ArcTan2(dy, dx);
 
         var ForceX: float32 := Force * Cos(Angle);
-        var ForceY: float32 := Force * Sin(Angle);
+        var ForceY: float32 := Force * Sin(Angle);}
+        var SpaceObjectIter: TSpaceObject := SpaceObjectsCopy[j];
 
-        ApplyForceToSpaceBody(SpaceObject, ForceX, ForceY, fDeltaTime);
-        ApplyForceToSpaceBody(OtherSpaceObject, -ForceX, -ForceY, fDeltaTime);
+        var Force: TPointF := CalculateGravitationalForce(SpaceObjectIter, SpaceObjectsCopy);
 
-        SpaceObjectsCopy[j] := OtherSpaceObject;
+        ApplyForceToSpaceBody(SpaceObjectIter, Force.X, Force.Y, fDeltaTime);
+        //ApplyForceToSpaceBody(OtherSpaceObject, -ForceX, -ForceY, fDeltaTime);
+
+        if SpaceObjectIter.ID = SpaceObject.ID then
+        begin
+          SpaceObject := SpaceObjectIter;
+        end else
+        begin
+          if IsColliding(SpaceObject, SpaceObjectIter) then
+            Exit;
+        end;
+
+        SpaceObjectsCopy[j] := SpaceObjectIter;
+
       end;
     end else if FViewRelativeOrbitTrajectory then
     begin
-      var SpaceObjectForce: TPointF := CalculateGravitationalForce(SpaceObject);
+      {var SpaceObjectForce: TPointF := CalculateGravitationalForce(SpaceObject);
       var AttractorForce:   TPointF := CalculateGravitationalForce(Attractor);
 
       // Calculate world position
 
       ApplyForceToSpaceBody(SpaceObject, SpaceObjectForce.X, SpaceObjectForce.Y, fDeltaTime);
-      ApplyForceToSpaceBody(Attractor, AttractorForce.X, AttractorForce.Y, fDeltaTime);
+      ApplyForceToSpaceBody(Attractor, AttractorForce.X, AttractorForce.Y, fDeltaTime);}
     end;
 
     // Calculate screen coords
