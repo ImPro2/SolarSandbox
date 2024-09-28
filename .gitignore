@@ -1,4 +1,5 @@
 *.exe
+*.log
 Intermediates/
 *.res
 *.identcache
