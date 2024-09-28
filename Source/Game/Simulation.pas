@@ -16,6 +16,7 @@ type
 
   TSpaceObjectSelectedEvent = procedure(ID: uint32) of object;
 
+
   TSimulationFrame = class(TFrame)
     Image: TImage;
     procedure FrameResize(Sender: TObject);
@@ -54,11 +55,17 @@ type
     FSelectedSpaceObjectID: uint32;
     FFocused: boolean;
 
+    FLastWidth, FLastHeight: float32;
+
     FPlaybackSpeed: float32;
 
     FPositionDictionary: TPositionDictionary;
     FGridLines: TGridLines;
     FOrbitTrajectoryData: TOrbitTrajectoryData;
+
+    FFrontBuffer, FBackBuffer: TBitmap;
+
+    FFinishedPainting: boolean;
   public
     OnSpaceObjectSelected: TSpaceObjectSelectedEvent;
 
@@ -71,7 +78,7 @@ type
     procedure CalculateCollision(var SpaceObject1, SpaceObject2: TSpaceObject; fDeltaTime: float32);
 
     // Rendering and Rendering Calculations
-    procedure PaintToCanvas(var Canvas: TCanvas);
+    procedure PaintToCanvas(Canvas: TCanvas);
     procedure RecalculateSpaceBodyRendering(const [ref] SpaceObject: TSpaceObject);
     function  IsColliding(SpaceBody1, SpaceBody2: TSpaceObject): boolean;
     procedure RecalculateViewProjectionMatrix();
@@ -286,7 +293,7 @@ end;
 
 {$Region Rendering and Rendering Calculations}
 
-procedure TSimulationFrame.PaintToCanvas(var Canvas: TCanvas);
+procedure TSimulationFrame.PaintToCanvas(Canvas: TCanvas);
 begin
   if FPositionDictionary.IsEmpty then
     Exit;

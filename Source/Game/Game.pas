@@ -3,7 +3,7 @@ unit Game;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, System.IOUtils,
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, System.IOUtils, System.Diagnostics,
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   Quick.Logger, Quick.Console, Quick.Logger.Provider.Console, Quick.Logger.Provider.Files,
   FMX.Objects, FMX.Controls.Presentation, FMX.Menus, Windows,
@@ -52,6 +52,8 @@ type
     FPropertiesFrame: TPropertiesFrame;
     FPlayBarFrame:    TPlayBarFrame;
     FSimulationFrame: TSimulationFrame;
+
+    FStopWatch: TStopWatch;
 
   private
     // Game events
@@ -132,6 +134,9 @@ begin
 
   InitSpaceObjects();
   InitFrames();
+
+  FStopWatch := TStopWatch.Create();
+  FStopWatch.Start();
 end;
 
 procedure TGameFrame.InitSpaceObjects();
@@ -154,11 +159,17 @@ begin
 end;
 
 procedure TGameFrame.Update(fDeltaTime: float32);
+const SimulationDeltaTime = 10.0;
 begin
   FSceneFrame.OnUpdate();
   FPropertiesFrame.OnUpdate(FSceneFrame.SelectedSpaceObjectID);
-  //FSimulationFrame.OnUpdate(fDeltaTime);
-  FSimulationFrame.onUpdate(0.005);
+
+  if FStopWatch.ElapsedMilliseconds >= SimulationDeltaTime then
+  begin
+    FStopWatch.Reset();
+    FStopWatch.Start();
+    FSimulationFrame.OnUpdate(SimulationDeltaTime * 0.001);
+  end;
 end;
 
 procedure TGameFrame.OnKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
