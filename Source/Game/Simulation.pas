@@ -272,16 +272,50 @@ procedure TSimulationFrame.CalculateCollision(var SpaceObject1, SpaceObject2: TS
 begin
   var m1:  float32 := SpaceObject1.Mass;
   var m2:  float32 := SpaceObject2.Mass;
+  var x1x: float32 := SpaceObject1.PositionX;
+  var x1y: float32 := SpaceObject1.PositionY;
+  var x2x: float32 := SpaceObject2.PositionX;
+  var x2y: float32 := SpaceObject2.PositionY;
   var v1x: float32 := SpaceObject1.VelocityX;
   var v1y: float32 := SpaceObject1.VelocityY;
   var v2x: float32 := SpaceObject2.VelocityX;
   var v2y: float32 := SpaceObject2.VelocityY;
 
-  SpaceObject1.VelocityX := v1x * (m1 - m2) / (m1 + m2) + v2x * (2 * m2) / (m1 + m2);
-  SpaceObject1.VelocityY := v1y * (m1 - m2) / (m1 + m2) + v2y * (2 * m2) / (m1 + m2);
+  // v1 = v1 - 2 * (m2 / (m1 + m2)) * ((v1 - v2) * (x1 - x2)) / (len(x1 - x2)^2) * (x1 - x2)
 
-  SpaceObject2.VelocityX := v1x * (2 * m1) / (m1 + m2) + v2x * (m2 - m1) / (m1 + m2);
-  SpaceObject2.VelocityY := v1y * (2 * m1) / (m1 + m2) + v2y * (m2 - m1) / (m1 + m2);
+  var masses1: float32 := 2 * m2 / (m1 + m2);
+  var masses2: float32 := 2 * m1 / (m1 + m2);
+
+  var dotProduct1: float32 := ((v1x - v2x) * (x1x - x2x) + (v1y - v2y) * (x1y - x2y));
+  var dotProduct2: float32 := ((v2x - v1x) * (x2x - x1x) + (v2y - v1y) * (x2y - x1y));
+  var magnitude1:  float32 := (x1x - x2x) * (x1x - x2x) + (x1y - x2y) * (x1y - x2y);
+  var magnitude2:  float32 := (x2x - x1x) * (x2x - x1x) + (x2y - x1y) * (x2y - x1y);
+
+  SpaceObject1.VelocityX := v1x - masses1 * (dotProduct1 / magnitude1) * (x1x - x2x);
+  SpaceObject1.VelocityY := v1y - masses1 * (dotProduct1 / magnitude1) * (x1y - x2y);
+  SpaceObject2.VelocityX := v2x - masses2 * (dotProduct2 / magnitude2) * (x2x - x1x);
+  SpaceObject2.VelocityY := v2y - masses2 * (dotProduct2 / magnitude2) * (x2y - x1y);
+
+  {SpaceObject1.VelocityX := v1x - ((2 * m2) / (m1 + m2)) *
+    (((v1x - v2x) * (x1x - x2x) + (v1y - v2y) * (x1y - x2y)) / ((x1x - x2x) * (x1x - x2x) + (x1y - x2y) * (x1y - x2y))) *
+    (x1x - x2x);
+
+  SpaceObject1.VelocityY := v1y - ((2 * m2) / (m1 + m2)) *
+    (((v1x - v2x) * (x1x - x2x) + (v1y - v2y) * (x1y - x2y)) / ((x1x - x2x) * (x1x - x2x) + (x1y - x2y) * (x1y - x2y))) *
+    (x1y - x2y);
+
+  SpaceObject2.VelocityX := v2x - ((2 * m2) / (m1 + m2)) *
+    (((v2x - v1x) * (x2x - x1x) + (v2y - v1y) * (x2y - x1y)) / ((x2x - x1x) * (x2x - x1x) + (x2y - x1y) * (x2y - x1y))) *
+    (x2x - x1x);
+
+  SpaceObject2.VelocityY := v2y - ((2 * m2) / (m1 + m2)) *
+    (((v2x - v1x) * (x2x - x1x) + (v2y - v1y) * (x2y - x1y)) / ((x2x - x1x) * (x2x - x1x) + (x2y - x1y) * (x2y - x1y))) *
+    (x2y - x1y);}
+
+  {SpaceObject1.VelocityX := (m1 * v1x + m2 * v2x + m2 * (v2x - v1x)) / (m1 + m2);
+  SpaceObject1.VelocityY := (m1 * v1y + m2 * v2y + m2 * (v2y - v1y)) / (m1 + m2);
+  SpaceObject2.VelocityX := (m1 * v1x + m2 * v2x - m1 * (v2x - v1x)) / (m1 + m2);
+  SpaceObject2.VelocityY := (m1 * v1y + m2 * v2y - m1 * (v2y - v1y)) / (m1 + m2);}
 
   SpaceObject1.PositionX := SpaceObject1.PositionX + SpaceObject1.VelocityX * fDeltaTime;
   SpaceObject1.PositionY := SpaceObject1.PositionY + SpaceObject1.VelocityY * fDeltaTime;
