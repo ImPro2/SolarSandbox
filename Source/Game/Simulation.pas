@@ -507,7 +507,13 @@ begin
 
   var G: float32 := 1.0;
 
-  var LastPoint: TPointF := NDCToScreenCoords(TVector3D.Create(SpaceObject.PositionX, SpaceObject.PositionY, 0.0) * FViewProjectionMatrix);
+  var LastPoints: array of TPointF;
+
+  for var i: int32 := 0 to Length(SpaceObjectsCopy) - 1 do
+  begin
+    var SpaceObjectIter: TSpaceObject := SpaceObjectsCopy[i];
+    LastPoints := LastPoints + [NDCToScreenCoords(TVector3D.Create(SpaceObjectIter.PositionX, SpaceObjectIter.PositionY, 0.0) * FViewProjectionMatrix)];
+  end;
 
   for var i: int32 := 0 to FOrbitTrajectoryCalculationStepCount - 1 do
   begin
@@ -537,13 +543,19 @@ begin
 
     // Calculate screen coords
 
-    var SpaceObjectVector:  TVector3D := TVector3D.Create(SpaceObject.PositionX, SpaceObject.PositionY, 0.0);
+    for var j := 0 to Length(SpaceObjectsCopy) - 1 do
+    begin
+      var SpaceObjectIter: TSpaceObject := SpaceObjectsCopy[j];
+      var LastPoint: TPointF := LastPoints[j];
 
-    var NDC: TVector3D := SpaceObjectVector * FViewProjectionMatrix;
-    var ScreenCoords: TPointF := NDCToScreenCoords(NDC);
+      var SpaceObjectVector:  TVector3D := TVector3D.Create(SpaceObjectIter.PositionX, SpaceObjectIter.PositionY, 0.0);
 
-    FOrbitTrajectoryData := FOrbitTrajectoryData + [TPair<TPointF, TPointF>.Create(LastPoint, ScreenCoords)];
-    LastPoint := ScreenCoords;
+      var NDC: TVector3D := SpaceObjectVector * FViewProjectionMatrix;
+      var ScreenCoords: TPointF := NDCToScreenCoords(NDC);
+
+      FOrbitTrajectoryData := FOrbitTrajectoryData + [TPair<TPointF, TPointF>.Create(LastPoint, ScreenCoords)];
+      LastPoints[j] := ScreenCoords;
+    end;
   end;
 end;
 
