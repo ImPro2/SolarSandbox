@@ -38,7 +38,7 @@ type
     FSimulate: boolean;
 
     FViewGrid: boolean;
-    FViewAbsoluteOrbitTrajectory, FViewRelativeOrbitTrajectory: boolean;
+    FViewOrbitTrajectories: boolean;
 
     FOrbitTrajectoryCalculationStepCount: int32;
 
@@ -83,7 +83,7 @@ type
     function  IsColliding(SpaceBody1, SpaceBody2: TSpaceObject): boolean;
     procedure RecalculateViewProjectionMatrix();
     procedure RecalculateGrid();
-    procedure RecalculateAbsoluteOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32);
+    procedure RecalculateOrbitTrajectories(fDeltaTime: float32; SpaceObjectID: uint32);
 
     // Conversions
     function NDCToScreenCoords(NDC: TVector3D): TPointF;
@@ -96,8 +96,7 @@ type
     property Focused: boolean read FFocused write FFocused;
     property PlaybackSpeed: float32 read FPlaybackSpeed write FPlaybackSpeed;
     property ViewGrid: boolean read FViewGrid write FViewGrid;
-    property ViewRelativeOrbitTrajectory: boolean read FViewRelativeOrbitTrajectory write FViewRelativeOrbitTrajectory;
-    property ViewAbsoluteOrbitTrajectory: boolean read FViewAbsoluteOrbitTrajectory write FViewAbsoluteOrbitTrajectory;
+    property ViewOrbitTrajectories: boolean read FViewOrbitTrajectories write FViewOrbitTrajectories;
     property OrbitTrajectoryCalculationStepCount: int32 read FOrbitTrajectoryCalculationStepCount write FOrbitTrajectoryCalculationStepCount;
   end;
 
@@ -107,8 +106,7 @@ procedure TSimulationFrame.Init();
 begin
   FSimulate := False;
 
-  FViewAbsoluteOrbitTrajectory := False;
-  FViewRelativeOrbitTrajectory := False;
+  FViewOrbitTrajectories := False;
   FViewGrid := True;
 
   FOrbitTrajectoryCalculationStepCount := 5000;
@@ -139,8 +137,8 @@ begin
   UpdateCameraMovement(DeltaTimeWithPlaybackSpeed);
   UpdateSpaceBodies(DeltaTimeWithPlaybackSpeed);
 
-  // Temporary
-  RecalculateAbsoluteOrbitTrajectory(fDeltaTime, FSelectedSpaceObjectID);
+  if FViewOrbitTrajectories then
+    RecalculateOrbitTrajectories(fDeltaTime, FSelectedSpaceObjectID);
 
   Repaint();
 end;
@@ -296,27 +294,6 @@ begin
   SpaceObject2.VelocityX := v2x - masses2 * (dotProduct2 / magnitude2) * (x2x - x1x);
   SpaceObject2.VelocityY := v2y - masses2 * (dotProduct2 / magnitude2) * (x2y - x1y);
 
-  {SpaceObject1.VelocityX := v1x - ((2 * m2) / (m1 + m2)) *
-    (((v1x - v2x) * (x1x - x2x) + (v1y - v2y) * (x1y - x2y)) / ((x1x - x2x) * (x1x - x2x) + (x1y - x2y) * (x1y - x2y))) *
-    (x1x - x2x);
-
-  SpaceObject1.VelocityY := v1y - ((2 * m2) / (m1 + m2)) *
-    (((v1x - v2x) * (x1x - x2x) + (v1y - v2y) * (x1y - x2y)) / ((x1x - x2x) * (x1x - x2x) + (x1y - x2y) * (x1y - x2y))) *
-    (x1y - x2y);
-
-  SpaceObject2.VelocityX := v2x - ((2 * m2) / (m1 + m2)) *
-    (((v2x - v1x) * (x2x - x1x) + (v2y - v1y) * (x2y - x1y)) / ((x2x - x1x) * (x2x - x1x) + (x2y - x1y) * (x2y - x1y))) *
-    (x2x - x1x);
-
-  SpaceObject2.VelocityY := v2y - ((2 * m2) / (m1 + m2)) *
-    (((v2x - v1x) * (x2x - x1x) + (v2y - v1y) * (x2y - x1y)) / ((x2x - x1x) * (x2x - x1x) + (x2y - x1y) * (x2y - x1y))) *
-    (x2y - x1y);}
-
-  {SpaceObject1.VelocityX := (m1 * v1x + m2 * v2x + m2 * (v2x - v1x)) / (m1 + m2);
-  SpaceObject1.VelocityY := (m1 * v1y + m2 * v2y + m2 * (v2y - v1y)) / (m1 + m2);
-  SpaceObject2.VelocityX := (m1 * v1x + m2 * v2x - m1 * (v2x - v1x)) / (m1 + m2);
-  SpaceObject2.VelocityY := (m1 * v1y + m2 * v2y - m1 * (v2y - v1y)) / (m1 + m2);}
-
   SpaceObject1.PositionX := SpaceObject1.PositionX + SpaceObject1.VelocityX * fDeltaTime;
   SpaceObject1.PositionY := SpaceObject1.PositionY + SpaceObject1.VelocityY * fDeltaTime;
   SpaceObject2.PositionX := SpaceObject2.PositionX + SpaceObject2.VelocityX * fDeltaTime;
@@ -349,9 +326,19 @@ begin
     GridBrush.Destroy();
   end;
 
+  // Draw space objects
+
+  var SpaceObjectBrush: TBrush := TBrush.Create(TBrushKind.Solid, TAlphaColors.Red);
+  for var spaceObj: TSpaceObject in GSpaceObjects do
+  begin
+    var rectf: TRectF := FPositionDictionary[spaceObj.ID];
+    Canvas.FillEllipse(rectf, 1.0, SpaceObjectBrush);
+  end;
+  SpaceObjectBrush.Destroy();
+
   // Draw orbiral trajectory
 
-  if FViewAbsoluteOrbitTrajectory or FViewRelativeOrbitTrajectory then
+  if FViewOrbitTrajectories then
   begin
     var OrbitTrajectoryBrush: TStrokeBrush := TStrokeBrush.Create(TBrushKind.Solid, TAlphaColors.White);
     OrbitTrajectoryBrush.Thickness := 0.5;
@@ -365,16 +352,6 @@ begin
     end;
     OrbitTrajectoryBrush.Destroy();
   end;
-
-  // Draw space objects
-
-  var SpaceObjectBrush: TBrush := TBrush.Create(TBrushKind.Solid, TAlphaColors.Red);
-  for var spaceObj: TSpaceObject in GSpaceObjects do
-  begin
-    var rectf: TRectF := FPositionDictionary[spaceObj.ID];
-    Canvas.FillEllipse(rectf, 1.0, SpaceObjectBrush);
-  end;
-  SpaceObjectBrush.Destroy();
 
   Canvas.EndScene();
 end;
@@ -520,10 +497,8 @@ begin
   end;
 end;
 
-procedure TSimulationFrame.RecalculateAbsoluteOrbitTrajectory(fDeltaTime: float32; SpaceObjectID: uint32);
+procedure TSimulationFrame.RecalculateOrbitTrajectories(fDeltaTime: float32; SpaceObjectID: uint32);
 begin
-  if not (FViewAbsoluteOrbitTrajectory or FViewRelativeOrbitTrajectory) then Exit;
-
   Delete(FOrbitTrajectoryData, 0, Length(FOrbitTrajectoryData));
 
   var SpaceObject: TSpaceObject := SpaceObjectFromID(SpaceObjectID);
@@ -537,30 +512,15 @@ begin
   for var i: int32 := 0 to FOrbitTrajectoryCalculationStepCount - 1 do
   begin
     // Calculate gravitational force
-    if FViewAbsoluteOrbitTrajectory then
+    if FViewOrbitTrajectories then
     begin
       for var j := 0 to Length(SpaceObjectsCopy) - 1 do
       begin
-        {var OtherSpaceObject: TSpaceObject := SpaceObjectsCopy[j];
-
-        if OtherSpaceObject.ID = SpaceObject.ID then continue;
-
-        var dx: float32 := OtherSpaceObject.PositionX - SpaceObject.PositionX;
-        var dy: float32 := OtherSpaceObject.PositionY - SpaceObject.PositionY;
-
-        var DistanceSquared := dx * dx + dy * dy;
-
-        var Force: float32 := G * SpaceObject.Mass * OtherSpaceObject.Mass / DistanceSquared;
-        var Angle: float32 := ArcTan2(dy, dx);
-
-        var ForceX: float32 := Force * Cos(Angle);
-        var ForceY: float32 := Force * Sin(Angle);}
         var SpaceObjectIter: TSpaceObject := SpaceObjectsCopy[j];
 
         var Force: TPointF := CalculateGravitationalForce(SpaceObjectIter, SpaceObjectsCopy);
 
         ApplyForceToSpaceBody(SpaceObjectIter, Force.X, Force.Y, fDeltaTime);
-        //ApplyForceToSpaceBody(OtherSpaceObject, -ForceX, -ForceY, fDeltaTime);
 
         if SpaceObjectIter.ID = SpaceObject.ID then
         begin
@@ -572,17 +532,7 @@ begin
         end;
 
         SpaceObjectsCopy[j] := SpaceObjectIter;
-
       end;
-    end else if FViewRelativeOrbitTrajectory then
-    begin
-      {var SpaceObjectForce: TPointF := CalculateGravitationalForce(SpaceObject);
-      var AttractorForce:   TPointF := CalculateGravitationalForce(Attractor);
-
-      // Calculate world position
-
-      ApplyForceToSpaceBody(SpaceObject, SpaceObjectForce.X, SpaceObjectForce.Y, fDeltaTime);
-      ApplyForceToSpaceBody(Attractor, AttractorForce.X, AttractorForce.Y, fDeltaTime);}
     end;
 
     // Calculate screen coords
