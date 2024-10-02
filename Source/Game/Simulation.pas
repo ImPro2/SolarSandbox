@@ -72,7 +72,8 @@ type
   private
     // Update functions
     procedure UpdateCameraMovement(fDeltaTime: float32);
-    procedure UpdateSpaceBodies(fDeltaTime: float32);
+    procedure UpdateSpaceObjects(var SpaceObjects: TSpaceObjectList; fDeltaTime: float32);
+    procedure RenderSpaceObjects(var SpaceObjects: TSpaceObjectList);
     function  CalculateGravitationalForce(const [ref] SpaceObject: TSpaceObject; const [ref] SpaceObjectList: TSpaceObjectList): TPointF;
     procedure ApplyForceToSpaceBody(var SpaceObject: TSpaceObject; ForceX, ForceY: float32; fDeltaTime: float32);
     procedure CalculateCollision(var SpaceObject1, SpaceObject2: TSpaceObject; fDeltaTime: float32);
@@ -135,7 +136,11 @@ begin
   var DeltaTimeWithPlaybackSpeed: float32 := fDeltaTime * FPlaybackSpeed;
 
   UpdateCameraMovement(DeltaTimeWithPlaybackSpeed);
-  UpdateSpaceBodies(DeltaTimeWithPlaybackSpeed);
+
+  if FSimulate then
+    UpdateSpaceObjects(GSpaceObjects, DeltaTimeWithPlaybackSpeed);
+
+  RenderSpaceObjects(GSpaceObjects);
 
   if FViewOrbitTrajectories then
     RecalculateOrbitTrajectories(fDeltaTime, FSelectedSpaceObjectID);
@@ -180,47 +185,45 @@ begin
   FMouseDeltaNDC := TVector3D.Zero;
 end;
 
-procedure TSimulationFrame.UpdateSpaceBodies(fDeltaTime: float32);
+procedure TSimulationFrame.UpdateSpaceObjects(var SpaceObjects: TSpaceObjectList; fDeltaTime: float32);
 begin
-  if FSimulate then
+  // Movement
+
+  for var i: int32 := 0 to Length(SpaceObjects) - 1 do
   begin
-    // Movement
+    var SpaceObject: TSpaceObject := SpaceObjects[i];
 
-    for var i: int32 := 0 to Length(GSpaceObjects) - 1 do
-    begin
-      var SpaceObject: TSpaceObject := GSpaceObjects[i];
+    var Force: TPointF := CalculateGravitationalForce(SpaceObject, SpaceObjects);
+    ApplyForceToSpaceBody(SpaceObject, Force.X, Force.Y, fDeltaTime);
 
-      var Force: TPointF := CalculateGravitationalForce(SpaceObject, GSpaceObjects);
-      ApplyForceToSpaceBody(SpaceObject, Force.X, Force.Y, fDeltaTime);
-
-      GSpaceObjects[i] := SpaceObject;
-    end;
-
-    // Collision
-
-    for var i: int32 := 0 to Length(GSpaceObjects) - 1 do
-    begin
-      for var j: int32 := i to Length(GSpaceObjects) - 1 do
-      begin
-        var SpaceObject1: TSpaceObject := GSpaceObjects[i];
-        var SpaceObject2: TSpaceObject := GSpaceObjects[j];
-
-        if SpaceObject1.ID = SpaceObject2.ID then continue;
-
-        if IsColliding(SpaceObject1, SpaceObject2) then
-        begin
-          CalculateCollision(SpaceObject1, SpaceObject2, fDeltaTime);
-        end;
-
-        GSpaceObjects[i] := SpaceObject1;
-        GSpaceObjects[j] := SpaceObject2;
-      end;
-    end;
+    SpaceObjects[i] := SpaceObject;
   end;
 
-  // Rendering
+  // Collision
 
-  for var SpaceObject: TSpaceObject in GSpaceObjects do
+  for var i: int32 := 0 to Length(SpaceObjects) - 1 do
+  begin
+    for var j: int32 := i to Length(SpaceObjects) - 1 do
+    begin
+      var SpaceObject1: TSpaceObject := SpaceObjects[i];
+      var SpaceObject2: TSpaceObject := SpaceObjects[j];
+
+      if SpaceObject1.ID = SpaceObject2.ID then continue;
+
+      if IsColliding(SpaceObject1, SpaceObject2) then
+      begin
+        CalculateCollision(SpaceObject1, SpaceObject2, fDeltaTime);
+      end;
+
+      SpaceObjects[i] := SpaceObject1;
+      SpaceObjects[j] := SpaceObject2;
+    end;
+  end;
+end;
+
+procedure TSimulationFrame.RenderSpaceObjects(var SpaceObjects: TSpaceObjectList);
+begin
+  for var SpaceObject: TSpaceObject in SpaceObjects do
   begin
     RecalculateSpaceBodyRendering(SpaceObject);
   end;
@@ -501,8 +504,6 @@ procedure TSimulationFrame.RecalculateOrbitTrajectories(fDeltaTime: float32; Spa
 begin
   Delete(FOrbitTrajectoryData, 0, Length(FOrbitTrajectoryData));
 
-  var SpaceObject: TSpaceObject := SpaceObjectFromID(SpaceObjectID);
-
   var SpaceObjectsCopy: TSpaceObjectList := Copy(GSpaceObjects, 0, Length(GSpaceObjects));
 
   var G: float32 := 1.0;
@@ -518,28 +519,8 @@ begin
   for var i: int32 := 0 to FOrbitTrajectoryCalculationStepCount - 1 do
   begin
     // Calculate gravitational force
-    if FViewOrbitTrajectories then
-    begin
-      for var j := 0 to Length(SpaceObjectsCopy) - 1 do
-      begin
-        var SpaceObjectIter: TSpaceObject := SpaceObjectsCopy[j];
 
-        var Force: TPointF := CalculateGravitationalForce(SpaceObjectIter, SpaceObjectsCopy);
-
-        ApplyForceToSpaceBody(SpaceObjectIter, Force.X, Force.Y, fDeltaTime);
-
-        if SpaceObjectIter.ID = SpaceObject.ID then
-        begin
-          SpaceObject := SpaceObjectIter;
-        end else
-        begin
-          if IsColliding(SpaceObject, SpaceObjectIter) then
-            Exit;
-        end;
-
-        SpaceObjectsCopy[j] := SpaceObjectIter;
-      end;
-    end;
+    UpdateSpaceObjects(SpaceObjectsCopy, fDeltaTime);
 
     // Calculate screen coords
 
