@@ -110,7 +110,7 @@ begin
   FViewOrbitTrajectories := False;
   FViewGrid := True;
 
-  FOrbitTrajectoryCalculationStepCount := 5000;
+  FOrbitTrajectoryCalculationStepCount := 1000;
 
   FCameraPosition  := TVector3D.Create(0.0, 0.0, 0.0);
   FCameraFocusPanOffset := TVector3D.Create(0.0, 0.0, 0.0);
@@ -362,7 +362,7 @@ end;
 procedure TSimulationFrame.GenerateThumbnail(Path: string);
 begin
   var Bitmap: TBitmap := TBitmap.Create(Round(Width), Round(Height));
-  //PaintToCanvas(Bitmap.Canvas);
+  PaintToCanvas(Bitmap.Canvas);
 
   Bitmap.SaveToFile(Path);
   Bitmap.Destroy();

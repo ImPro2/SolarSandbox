@@ -1,0 +1,20 @@
+---
+Name: Binary Orbit 
+ThumbnailPath: C:\Dev\Delphi\SolarSandbox\Binaries\Win32-Debug\Templates\BinaryOrbit.bmp
+Notes: Two objects of similar mass, such as twin stars or large asteroids, orbit a common center of mass. The objects pull on each other with gravity, creating an elliptical or circular path depending on their velocities. This template showcases how two massive bodies interact without external influences, demonstrating gravitational balance and dynamic motion.
+Space Objects:
+- Name: Object A
+  ID: 1398622912
+  Mass: 50
+  PositionX: -5
+  PositionY: -5
+  VelocityX: 0
+  VelocityY: 0
+- Name: Object B
+  ID: 493501383
+  Mass: 50
+  PositionX: 5
+  PositionY: 5
+  VelocityX: 0
+  VelocityY: 0
+...

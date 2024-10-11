@@ -22,7 +22,7 @@ object ProjectSelectorFrame: TProjectSelectorFrame
         end>
       TextSettings.Trimming = None
       IsSelected = True
-      Size.Width = 90.000000000000000000
+      Size.Width = 89.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''

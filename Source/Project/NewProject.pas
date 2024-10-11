@@ -16,8 +16,9 @@ type
     lblTemplate: TLabel;
     TemplatesGridPanel: TGridPanelLayout;
     pnlBottom: TPanel;
-    lblTemplateInfo: TLabel;
+    pnlTop: TPanel;
     lblInfo: TLabel;
+    lblTemplateInfo: TLabel;
     procedure OnNewProjectClick(Sender: TObject);
     procedure btnPathSelectorClick(Sender: TObject);
   public

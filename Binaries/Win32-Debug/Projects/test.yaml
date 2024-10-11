@@ -19,9 +19,16 @@ Space Objects:
   VelocityY: 0
 - Name: Moon 2
   ID: 49353383
-  Mass: 10
+  Mass: 2
   PositionX: 0
-  PositionY: -10
-  VelocityX: -3
+  PositionY: 12
+  VelocityX: 0
+  VelocityY: 0
+- Name: Moon 3
+  ID: 491664791
+  Mass: 10
+  PositionX: 10000
+  PositionY: 0
+  VelocityX: 0
   VelocityY: 0
 ...

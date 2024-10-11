@@ -2889,8 +2889,8 @@ object PlayBarFrame: TPlayBarFrame
       Cursor = crSizeWE
       DecimalDigits = 0
       Min = 1.000000000000000000
-      Max = 1000000.000000000000000000
-      Value = 100.000000000000000000
+      Max = 3000.000000000000000000
+      Value = 2000.000000000000000000
       ValueType = Float
       KeyboardType = NumbersAndPunctuation
       Position.X = 85.000000000000000000

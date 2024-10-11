@@ -67,6 +67,7 @@ object PropertiesFrame: TPropertiesFrame
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
       Cursor = crIBeam
+      Max = 100000000.000000000000000000
       Position.X = 64.000000000000000000
       Position.Y = 46.000000000000000000
       Size.Width = 204.000000000000000000
@@ -155,7 +156,7 @@ object PropertiesFrame: TPropertiesFrame
         object nbPositionX: TNumberBox
           Touch.InteractiveGestures = [LongTap, DoubleTap]
           Align = Client
-          TabOrder = 7
+          TabOrder = 4
           Cursor = crSizeWE
           Min = -10000.000000000000000000
           Max = 10000.000000000000000000
@@ -178,7 +179,7 @@ object PropertiesFrame: TPropertiesFrame
         object nbPositionY: TNumberBox
           Touch.InteractiveGestures = [LongTap, DoubleTap]
           Align = Client
-          TabOrder = 8
+          TabOrder = 5
           Cursor = crSizeWE
           Min = -10000.000000000000000000
           Max = 10000.000000000000000000
@@ -254,7 +255,7 @@ object PropertiesFrame: TPropertiesFrame
         object nbVelocityX: TNumberBox
           Touch.InteractiveGestures = [LongTap, DoubleTap]
           Align = Client
-          TabOrder = 6
+          TabOrder = 4
           Cursor = crSizeWE
           Min = -10000.000000000000000000
           Max = 10000.000000000000000000
@@ -277,7 +278,7 @@ object PropertiesFrame: TPropertiesFrame
         object nbVelocityY: TNumberBox
           Touch.InteractiveGestures = [LongTap, DoubleTap]
           Align = Client
-          TabOrder = 7
+          TabOrder = 4
           Cursor = crSizeWE
           Min = -10000.000000000000000000
           Max = 10000.000000000000000000

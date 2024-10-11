@@ -1,0 +1,20 @@
+---
+Name: Circumbinary Planetary System 
+ThumbnailPath: C:\Dev\Delphi\SolarSandbox\Binaries\Win32-Debug\Templates\CircumbinaryPlanetarySystem.bmp
+Notes: Two stars orbit around a common center of mass, with one or more planets circling both stars. The planets follow elliptical orbits that account for the complex gravitational pull of both stars. This template demonstrates how planets can exist in the dynamic environment of a binary star system, balancing the gravitational forces from both stellar bodies.
+Space Objects:
+- Name: Planet
+  ID: 1398622912
+  Mass: 100
+  PositionX: 0
+  PositionY: 0
+  VelocityX: 0
+  VelocityY: 0
+- Name: Moon
+  ID: 493501383
+  Mass: 10
+  PositionX: 0
+  PositionY: 10
+  VelocityX: 0
+  VelocityY: 0
+...

@@ -1,0 +1,20 @@
+---
+Name: Asteroid Belt 
+ThumbnailPath: C:\Dev\Delphi\SolarSandbox\Binaries\Win32-Debug\Templates\AsteroidBelt.bmp
+Notes: A collection of smaller objects orbit a star in a ring-like formation, spread across various distances. Each asteroid has its own trajectory and speed, based on its proximity to the star. The template helps visualize how smaller bodies, while not massive, still experience gravitational forces that influence their orbits, resulting in a dynamic and chaotic system.
+Space Objects:
+- Name: Planet
+  ID: 1398622912
+  Mass: 100
+  PositionX: 0
+  PositionY: 0
+  VelocityX: 0
+  VelocityY: 0
+- Name: Moon
+  ID: 493501383
+  Mass: 10
+  PositionX: 0
+  PositionY: 10
+  VelocityX: 0
+  VelocityY: 0
+...

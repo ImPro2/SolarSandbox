@@ -1,43 +1,84 @@
 object NewProjectFrame: TNewProjectFrame
   Align = Client
-  Size.Width = 527.000000000000000000
-  Size.Height = 448.000000000000000000
+  Size.Width = 630.000000000000000000
+  Size.Height = 374.000000000000000000
   Size.PlatformDefault = False
-  object btnNewProject: TButton
-    Anchors = [akRight, akBottom]
-    StyledSettings = [FontColor]
-    Position.X = 420.000000000000000000
-    Position.Y = 416.000000000000000000
-    Size.Width = 99.000000000000000000
-    Size.Height = 24.000000000000000000
+  object pnlBottom: TPanel
+    Anchors = [akLeft, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 193.000000000000000000
+    Size.Width = 612.000000000000000000
+    Size.Height = 173.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    Text = 'Create'
-    TextSettings.Font.Family = 'Roboto'
-    TextSettings.Font.Size = 15.000000000000000000
-    TextSettings.Font.StyleExt = {00070000000000000004000000}
-    TextSettings.Trimming = None
-    OnClick = OnNewProjectClick
+    object lblInfo: TLabel
+      StyledSettings = [FontColor]
+      Position.X = 8.000000000000000000
+      Position.Y = 8.000000000000000000
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.Size = 15.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Text = 'Info'
+      TabOrder = 1
+    end
+    object lblTemplateInfo: TLabel
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      Position.X = 8.000000000000000000
+      Position.Y = 33.000000000000000000
+      Size.Width = 596.000000000000000000
+      Size.Height = 108.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.VertAlign = Leading
+      TabOrder = 2
+    end
+    object btnNewProject: TButton
+      Anchors = [akRight, akBottom]
+      StyledSettings = [FontColor]
+      Position.X = 505.000000000000000000
+      Position.Y = 141.000000000000000000
+      Size.Width = 99.000000000000000000
+      Size.Height = 24.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Create'
+      TextSettings.Font.Family = 'Roboto'
+      TextSettings.Font.Size = 15.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.Trimming = None
+      OnClick = OnNewProjectClick
+    end
   end
-  object pnlBottom: TPanel
+  object pnlTop: TPanel
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 8.000000000000000000
-    Size.Width = 511.000000000000000000
-    Size.Height = 400.000000000000000000
+    Size.Width = 614.000000000000000000
+    Size.Height = 177.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
     object TemplatesGridPanel: TGridPanelLayout
-      Anchors = [akLeft, akTop, akRight]
+      Anchors = [akLeft, akTop, akRight, akBottom]
       Position.X = 8.000000000000000000
-      Position.Y = 33.000000000000000000
-      Size.Width = 495.000000000000000000
-      Size.Height = 232.000000000000000000
+      Position.Y = 31.000000000000000000
+      Size.Width = 598.000000000000000000
+      Size.Height = 138.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
-      ColumnCollection = <>
+      ColumnCollection = <
+        item
+          Value = 50.000000000000000000
+        end
+        item
+          Value = 50.000000000000000000
+        end>
       ControlCollection = <>
-      RowCollection = <>
+      RowCollection = <
+        item
+          Value = 50.000000000000000000
+        end
+        item
+          Value = 50.000000000000000000
+        end>
     end
     object lblTemplate: TLabel
       StyledSettings = [FontColor]
@@ -49,32 +90,6 @@ object NewProjectFrame: TNewProjectFrame
       TextSettings.Trimming = None
       Text = 'Templates'
       TabOrder = 1
-    end
-    object lblTemplateInfo: TLabel
-      Anchors = [akLeft, akTop, akRight, akBottom]
-      StyledSettings = [FontColor]
-      Position.X = 8.000000000000000000
-      Position.Y = 298.000000000000000000
-      Size.Width = 495.000000000000000000
-      Size.Height = 94.000000000000000000
-      Size.PlatformDefault = False
-      TextSettings.Font.Family = 'Roboto'
-      TextSettings.Font.Size = 13.000000000000000000
-      TextSettings.Font.StyleExt = {00040000000200000004000000}
-      TextSettings.VertAlign = Leading
-      TextSettings.Trimming = None
-      TabOrder = 2
-    end
-    object lblInfo: TLabel
-      StyledSettings = [FontColor]
-      Position.X = 8.000000000000000000
-      Position.Y = 273.000000000000000000
-      TextSettings.Font.Family = 'Roboto'
-      TextSettings.Font.Size = 16.000000000000000000
-      TextSettings.Font.StyleExt = {00070000000000000004000000}
-      TextSettings.Trimming = None
-      Text = 'Info'
-      TabOrder = 3
     end
   end
 end

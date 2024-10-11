@@ -7,9 +7,13 @@ uses
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   FMX.Controls.Presentation,
   SpaceObject, System.Rtti, FMX.Grid.Style, FMX.ScrollBox, FMX.Grid, FMX.Layouts,
-  FMX.Edit, Quick.Console, Quick.Logger;
+  FMX.Edit, Quick.Console, Quick.Logger,
+  WindowsFunctions;
 
 type
+
+  TSceneSpaceObjectSelectedEvent = procedure(ID: uint32) of object;
+
   TSceneFrame = class(TFrame)
     lblHeading: TLabel;
     Panel: TPanel;
@@ -22,9 +26,12 @@ type
       var Value: TValue);
     procedure btnAddSpaceObjectClick(Sender: TObject);
     procedure GridCellClick(const Column: TColumn; const Row: Integer);
+    procedure GridResize(Sender: TObject);
   public
     procedure Init();
     procedure OnUpdate();
+  public
+    OnSceneSpaceObjectSelected: TSceneSpaceObjectSelectedEvent;
 
   private
     procedure SetSelectedSpaceObject(const ID: uint32);
@@ -56,8 +63,6 @@ begin
   FSelectedSpaceObjectID := ID;
   var idx: int32 := SpaceObjectIndexFromID(ID);
   Grid.SelectRow(idx);
-
-  Logger.Info('Space Object ' + GSpaceObjects[idx].Name + ' is selected');
 end;
 
 procedure TSceneFrame.btnAddSpaceObjectClick(Sender: TObject);
@@ -70,7 +75,11 @@ end;
 procedure TSceneFrame.GridCellClick(const Column: TColumn; const Row: Integer);
 begin
   var ID: uint32 := GSpaceObjects[Row].ID;
+
   SelectedSpaceObjectID := ID;
+
+  if Assigned(OnSceneSpaceObjectSelected) then
+    OnSceneSpaceObjectSelected(ID);
 end;
 
 procedure TSceneFrame.GridGetValue(Sender: TObject; const ACol, ARow: Integer;
@@ -82,6 +91,11 @@ begin
   end;
 end;
 
+
+procedure TSceneFrame.GridResize(Sender: TObject);
+begin
+  NameColumn.Width := Grid.Width - 6;
+end;
 
 {$R *.fmx}
 

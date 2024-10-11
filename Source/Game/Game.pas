@@ -68,6 +68,7 @@ type
     procedure OnViewOrbitTrajectory();
     procedure OnHideOrbitTrajectory();
     procedure OnSimulationSpaceObjectSelected(ID: uint32);
+    procedure OnSceneSpaceObjectSelected(ID: uint32);
 
   public
     // Init and update
@@ -102,6 +103,7 @@ begin
   FSceneFrame                := TSceneFrame.Create(Self);
   FSceneFrame.Parent         := pnlScene;
   FSceneFrame.Visible        := False;
+  FSceneFrame.OnSceneSpaceObjectSelected := Self.OnSceneSpaceObjectSelected;
 
   FPropertiesFrame           := TPropertiesFrame.Create(Self);
   FPropertiesFrame.Parent    := pnlProperties;
@@ -240,6 +242,12 @@ begin
 end;
 
 procedure TGameFrame.OnSimulationSpaceObjectSelected(ID: uint32);
+begin
+  FSceneFrame.SelectedSpaceObjectID := ID;
+  FSimulationFrame.SelectedSpaceObjectID := ID;
+end;
+
+procedure TGameFrame.OnSceneSpaceObjectSelected(ID: uint32);
 begin
   FSceneFrame.SelectedSpaceObjectID := ID;
   FSimulationFrame.SelectedSpaceObjectID := ID;

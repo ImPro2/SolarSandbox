@@ -1,6 +1,6 @@
 ---
 Name: Planet and Moon
-ThumbnailPath: C:\Dev\Delphi\SolarSandbox\Binaries\Win32-Debug\Templates\PlanetAndMoon.bmp
+ThumbnailPath: PlanetAndMoon.bmp
 Notes: A large planet, like Earth, is orbited by a smaller moon in a stable, circular or elliptical orbit. The gravitational force of the planet pulls the moon towards it, while the moon's velocity keeps it from crashing into the planet. This setup highlights the interaction between a dominant mass and a smaller satellite.
 Space Objects:
 - Name: Planet
